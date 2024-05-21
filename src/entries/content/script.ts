@@ -1,5 +1,5 @@
 
-const scriptUrlList = ["assets/src/entries/content/main-BXLdK5VG.js"];
+const scriptUrlList = ["assets/src/entries/content/main-2J-B6DtA.js"];
 scriptUrlList.forEach(url=>{
     const s = document.createElement('script');
     s.src = chrome.runtime.getURL(url);
