@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host",
-    "build": "vue-tsc && vite build",
+    "build": "tsc ./prebuild.ts --outfile ./prebuild.cjs && node ./prebuild.cjs && vue-tsc && vite build",
     "preview": "vite preview"
   },
   "dependencies": {

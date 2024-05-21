@@ -5,6 +5,10 @@ const manifest: chrome.runtime.Manifest = {
   name: pkg.name,
   version: pkg.version,
   description: pkg.description,
+  permissions: [
+    "webRequest",
+    "webRequestBlocking",
+  ],
   host_permissions: ['*://*/*'],
   background: {
     service_worker: 'src/entries/background/main.ts',
@@ -14,6 +18,8 @@ const manifest: chrome.runtime.Manifest = {
       matches: ['<all_urls>'],
       js: [
         'src/entries/content/main.ts',
+        'src/entries/content/event.ts',
+        'src/entries/content/script.ts'
       ],
     }
   ],
