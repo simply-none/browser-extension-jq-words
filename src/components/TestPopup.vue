@@ -23,11 +23,11 @@ type WordType = 'youdao' | 'bing'
 let wordList = reactive({
   youdao: {
     type: 'youdao',
-    data: {}
+    data: ''
   },
   bing: {
     type: 'bing',
-    data: {}
+    data: ''
   },
 })
 
@@ -40,18 +40,21 @@ const getData = (e: MouseEvent) => {
   console.log(selectedText, 'selected text')
   let isWord = /^[a-z]+[\-\']?[a-z]*$/i.test(selectedText)
   if (isWord) {
+    dialogTableVisible.value = true
+
     info.value = {
         style: {
           // maxWidth: '500px',
           // position: 'fixed',
           // left: '100px',
           // top: '100px',
-          // height: '50%',
-          // overflow: 'auto',
+          maxHeight: '80%',
+          margin: '15% auto 0',
+          overflow: 'auto',
           background: 'white',
-          boxShadow: '0px 0px 6px rgba(0, 0, 0, .12)',
+          boxShadow: 'rgb(129 45 247) 0px 0px 6px',
           zIndex: 10000000,
-          border: '2px solid #51a4ff',
+          border: '2px solid rgb(106 0 255)',
         },
         title: selectedText
       }
@@ -72,7 +75,6 @@ const getWordDesc = (ev: { data: ReqData<{text: string; type: WordType}>}) => {
       console.log(ev.data)
       ev.data.data.type && (wordList[ev.data.data.type].data = ev.data.data.text)
       
-      dialogTableVisible.value = true
     }
 
   }

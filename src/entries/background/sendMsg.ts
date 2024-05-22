@@ -1,4 +1,5 @@
 import cheerio from 'cheerio'
+import { youdaoCustomEle } from './customStyle'
 
 interface ReqData<T> {
   type: 'error' | `info:${string}` | `req:${string}`;
@@ -119,27 +120,71 @@ function getDictSet(select: DictType[] = ['youdao', 'bing'], word: string = '') 
   })
 }
 
+function insert(selectors: string[], html: string, customEleArr?: string[]) {
+  let id = 'browser-extension-jq-words'
+
+  const $new = cheerio.load(`<div id='${id}'></div>`);
+  const $ = cheerio.load(html);
+
+  selectors.forEach(async selector => {
+    await elementToNewNode($new(`#${id}`), $, selector)
+  })
+
+  if (customEleArr) {
+    customEleArr.forEach(customEle => {
+      $(customEle).appendTo($new(`#${id}`))
+    })
+  }
+  return $new
+}
+
+async function elementToNewNode(newEle: any, oldEle: any, selector: string) {
+  newEle.append(oldEle(selector));
+  const newText = await newEle.html();
+  console.log(newText);
+}
+
 const handleDomInfo: {
   [key in DictType]: (resText: string, item: DictInfo) => string
 } = {
   youdao(resText, item) {
-    const $ = cheerio.load(resText)
-    $('#webTrans').remove()
-    $('#wordArticle').remove()
-    $('#eTransform').remove()
-    let parsedWordDesc = $(item.querySelect)
-    $('<h1 class="plum" style="font-size: 36px;">Plum</h1>').prependTo(parsedWordDesc)
-    console.log(parsedWordDesc, 2)
-    return $('html').html() || parsedWordDesc.html() || ''
+    console.log(item)
+    const selectList = [
+      '#phrsListTab > h2',
+      '#phrsListTab > div.trans-container',
+      '#authTrans',
+      'link[rel="stylesheet"]',
+      'style'
+    ]
+
+    // const $ = cheerio.load(resText)
+    // $('#webTrans').remove()
+    // $('#wordArticle').remove()
+    // $('#eTransform').remove()
+    let parsedWordDesc = insert(selectList, resText, youdaoCustomEle)
+    // $('<h1 class="plum" style="font-size: 36px;">Plum</h1>').prependTo(parsedWordDesc)
+    // console.log(parsedWordDesc, 2)
+    return parsedWordDesc.html() || ''
   },
   bing(resText, item) {
-    const $ = cheerio.load(resText)
-    $('.img_area').remove()
-    let parsedWordDesc = $(item.querySelect)
-    $('<h1 class="plum" style="font-size: 36px;">Plum</h1>').prependTo(parsedWordDesc)
+    console.log(item)
+    const selectList = [
+      'div.contentPadding > div > div > div.lf_area > div.qdef > div.hd_area',
+      'div.contentPadding > div > div > div.lf_area > div.qdef > ul',
+      '#sentenceSeg > div.se_li',
+      'link[rel="stylesheet"]',
+      'style'
+    ]
+    // const $ = cheerio.load(resText)
+    // $('.img_area').remove()
     
-    console.log(parsedWordDesc, 2)
-    return $('html').html() || parsedWordDesc.html() || ''
+    let parsedWordDesc = insert(selectList, resText)
+
+    
+    // $('<h1 class="plum" style="font-size: 36px;">Plum</h1>').prependTo(parsedWordDesc)
+    
+    // console.log(parsedWordDesc, 2)
+    return parsedWordDesc.html() || ''
   },
 
 }

@@ -1,4 +1,4 @@
-const {writeFileSync, readdirSync} = require('fs');
+const {writeFileSync, readdirSync, readFileSync} = require('fs');
 const {join}  = require('path');
 
 const cdPath = join(__dirname, "./dist/assets/src/entries/content");
@@ -19,14 +19,35 @@ scriptUrlList.forEach(url=>{
     (document.head || document.documentElement).appendChild(s);
 })`;
 
-const cssPath = join(__dirname, "./dist/assets/node_modules/element-plus/dist");
-const cssFiles = readdirSync(`${cssPath}`);
-const cssUrlList = cssFiles.map((file) => {
-  return `"assets/node_modules/element-plus/dist/${file}"`
+// const cssPath1 = join(__dirname, "./dist/assets/node_modules/element-plus/dist");
+const cssPath2 = join(__dirname, "./dist/assets");
+// let cssFiles1 = readdirSync(`${cssPath1}`);
+// cssFiles1 = cssFiles1.filter(file => /\.css$/.test(file)).map((file) => {
+//   return `"assets/node_modules/element-plus/dist/${file}"`
+// });
+let cssFiles2 = readdirSync(`${cssPath2}`)
+cssFiles2 = cssFiles2.filter(file => /\.css$/.test(file)).map((file) => {
+  return `"assets/${file}"`
 });
+const cssFiles = [...cssFiles2]
+
+const manifest = JSON.parse(readFileSync('./dist/manifest.json', { encoding: 'utf-8' }))
+
+const webRes = manifest.web_accessible_resources[0].resources
+
+cssFiles.forEach(file => {
+  const newFile = file.replace(/\"/g, '')
+  if (!webRes.includes(newFile)) {
+    webRes.push(newFile)
+  }
+})
+
+manifest.web_accessible_resources[0].resources = webRes
+
+writeFileSync('./dist/manifest.json', JSON.stringify(manifest, null, 2))
 
 const cssText = `
-const cssUrlList = [${cssUrlList}];
+const cssUrlList = [${cssFiles}];
 console.log(cssUrlList, 'list')
 cssUrlList.forEach(url=>{
   console.log(url, 'url')

@@ -31,7 +31,7 @@ const manifest: chrome.runtime.Manifest = {
         'src/entries/contentScripts/script.ts'
       ],
       css: [
-        'node_modules/element-plus/dist/index.css',
+        'src/entries/content/style.css'
       ]
     }
   ],
