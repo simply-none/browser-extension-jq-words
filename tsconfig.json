@@ -6,7 +6,7 @@
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
 
-    "types": ["element-plus/global", "@types/chrome", "@types/node"],
+    "types": ["element-plus/global", "@types/chrome", "@types/node", "@types/cheerio", "./src/types"],
     "baseUrl": "./",
     "paths": {
       "@/*": ["./src/"]

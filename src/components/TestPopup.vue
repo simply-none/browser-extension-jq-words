@@ -1,27 +1,34 @@
 <template>
   <div id="test-popup">
-    <el-button type="primary" @click="dialogTableVisible = true">乘势而上</el-button>
-    <h1>{{ msg }}</h1>
-    <ShowResult :dialogTableVisible="dialogTableVisible" :data="data" :info="info" @closeDialog="dialogTableVisible = false"/>
+    <ShowResult :dialogTableVisible="dialogTableVisible" :wordList="wordList" :data="data" :info="info" @closeDialog="dialogTableVisible = false"/>
   </div>
 </template>
 
 <script setup lang="ts">
 import ShowResult from '@/components/ShowResult.vue'
 
-import { onMounted, onBeforeUnmount, ref } from 'vue'
-// chrome.runtime.getPlatformInfo(function (info) {
-//   console.log(info, 'info')
-// })
+import { onMounted, onBeforeUnmount, ref, reactive } from 'vue'
 
 defineProps<{ msg: string }>()
-
-let wordDesc = ref()
 
 let data = ref()
 let info = ref({
   title: '',
   style: {}
+})
+
+type WordType = 'youdao' | 'bing'
+
+
+let wordList = reactive({
+  youdao: {
+    type: 'youdao',
+    data: {}
+  },
+  bing: {
+    type: 'bing',
+    data: {}
+  },
 })
 
 let dialogTableVisible = ref(false)
@@ -35,12 +42,12 @@ const getData = (e: MouseEvent) => {
   if (isWord) {
     info.value = {
         style: {
-          maxWidth: '500px',
-          position: 'fixed',
-          left: '100px',
-          top: '100px',
-          height: '50%',
-          overflow: 'auto',
+          // maxWidth: '500px',
+          // position: 'fixed',
+          // left: '100px',
+          // top: '100px',
+          // height: '50%',
+          // overflow: 'auto',
           background: 'white',
           boxShadow: '0px 0px 6px rgba(0, 0, 0, .12)',
           zIndex: 10000000,
@@ -60,11 +67,11 @@ const getData = (e: MouseEvent) => {
   }
 }
 
-const getResult = (ev: { data: {text: string; result: object}}) => {
-    if (ev.data.text === '返回结果') {
+const getWordDesc = (ev: { data: ReqData<{text: string; type: WordType}>}) => {
+    if (ev.data.type === 'info:word-desc') {
       console.log(ev.data)
-      wordDesc.value = ev.data.result
-      data.value = ev.data.result
+      ev.data.data.type && (wordList[ev.data.data.type].data = ev.data.data.text)
+      
       dialogTableVisible.value = true
     }
 
@@ -72,12 +79,12 @@ const getResult = (ev: { data: {text: string; result: object}}) => {
 
 onBeforeUnmount(() => {
   removeEventListener('mouseup', getData)
-  removeEventListener("message", getResult)
+  removeEventListener("message", getWordDesc)
 })
 
 onMounted(() => {
   addEventListener('mouseup', getData)
-  addEventListener("message", getResult)
+  addEventListener("message", getWordDesc)
 })
 
 

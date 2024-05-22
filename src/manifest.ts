@@ -5,6 +5,9 @@ const manifest: chrome.runtime.Manifest = {
   name: pkg.name,
   version: pkg.version,
   description: pkg.description,
+  content_security_policy: {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
+  },
   permissions: [
     "webRequest",
     "webRequestBlocking",
@@ -24,9 +27,12 @@ const manifest: chrome.runtime.Manifest = {
       matches: ['<all_urls>'],
       js: [
         'src/entries/content/main.ts',
-        'src/entries/content/event.ts',
-        'src/entries/content/script.ts'
+        'src/entries/contentScripts/event.ts',
+        'src/entries/contentScripts/script.ts'
       ],
+      css: [
+        'node_modules/element-plus/dist/index.css',
+      ]
     }
   ],
   action: {
