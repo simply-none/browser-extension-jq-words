@@ -25,11 +25,15 @@ let wordList = reactive({
     type: 'youdao',
     name: '有道词典',
     data: '',
+    phonetic: '',
+    translate: '',
     expand: false,
   },
   bing: {
     type: 'bing',
     name: '必应词典',
+    phonetic: '',
+    translate: '',
     data: '',
     expand: false,
   },
@@ -50,7 +54,7 @@ const topHandle = (type: string) => {
     window.postMessage({
       type: 'req:openTab',
       data: {
-        url: 'src/entries/popup/index.html'
+        url: 'src/entries/popup/index.html?name=Home'
       }
     }, "*")
   }
@@ -59,7 +63,7 @@ const topHandle = (type: string) => {
 const getWords = (word: string) => {
   console.log(word, 'selected text')
   let isWord = /^[a-z]+[\-\']?[a-z]*$/i.test(word)
-  if (word.length > 20) {
+  if (word.length > 30) {
     // 查词字数不可超过20
     return false
   }

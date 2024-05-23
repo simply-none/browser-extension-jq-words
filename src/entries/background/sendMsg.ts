@@ -84,7 +84,7 @@ function listenMultiMsg(port: chrome.runtime.Port, data: ReqData<{ word: string 
   let fetchList = getDictSet(['bing', 'youdao'], word)
   
   // 避免关闭请求连接的通道，特定保持5s的长连接
-  keepLongConnection(port)
+  // keepLongConnection(port)
 
   fetchList.forEach(item => {
     if (!item.type) {
@@ -118,7 +118,7 @@ function listenMultiMsg(port: chrome.runtime.Port, data: ReqData<{ word: string 
 
 // utils----start
 // 保持扩展插件各个通道连接不关闭
-function keepLongConnection (port: chrome.runtime.Port) {
+export function keepLongConnection (port: chrome.runtime.Port) {
   let count = 0
   const timer = setInterval(() => {
     if (count >= 5) {

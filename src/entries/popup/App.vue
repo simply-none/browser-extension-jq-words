@@ -1,13 +1,26 @@
 <script setup lang="ts">
+import { useRoute, useRouter } from 'vue-router';
+import { onMounted } from 'vue';
+const route = useRoute()
+const router = useRouter()
+
+onMounted(() => {
+  console.log(route, route.query, 'route')
+
+  if (route.query.name) {
+    console.log('跳转啊')
+    router.push({
+      name: route.query.name as string
+    })
+  }
+})
 
 </script>
 
 <template>
   <router-link to="/">home</router-link>
   <router-link to="/about">home</router-link>
-  <router-view/>
+  <router-view />
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
