@@ -12,7 +12,7 @@ const scriptUrlList = [${scriptUrlList}];
 scriptUrlList.forEach(url=>{
     const s = document.createElement('script');
     s.src = chrome.runtime.getURL(url);
-    s.setAttribute('type', 'text/javascript');
+    s.setAttribute('type', 'module');
     s.setAttribute('class', 'jousindea-script');
     s.onload = function() {
     };

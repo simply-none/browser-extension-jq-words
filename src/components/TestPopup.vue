@@ -1,20 +1,20 @@
 <template>
   <div id="test-popup">
-    <ShowResult :dialogTableVisible="dialogTableVisible" :wordList="wordList" :data="data" :info="info" @closeDialog="dialogTableVisible = false"/>
+    <ShowResult :dialogTableVisible="dialogTableVisible" :wordList="wordList" :data="data" :info="info"
+      @closeDialog="dialogTableVisible = false" @getWords="getWords" @topHandle="topHandle" />
   </div>
 </template>
 
 <script setup lang="ts">
 import ShowResult from '@/components/ShowResult.vue'
 
-import { onMounted, onBeforeUnmount, ref, reactive } from 'vue'
+import { toRaw, onMounted, onBeforeUnmount, ref, reactive } from 'vue'
 
 defineProps<{ msg: string }>()
 
 let data = ref()
 let info = ref({
   title: '',
-  style: {}
 })
 
 type WordType = 'youdao' | 'bing'
@@ -23,61 +23,103 @@ type WordType = 'youdao' | 'bing'
 let wordList = reactive({
   youdao: {
     type: 'youdao',
-    data: ''
+    name: '有道词典',
+    data: '',
+    expand: false,
   },
   bing: {
     type: 'bing',
-    data: ''
+    name: '必应词典',
+    data: '',
+    expand: false,
   },
 })
 
 let dialogTableVisible = ref(false)
 
-const getData = (e: MouseEvent) => {
-  console.log(e, 'event mouseup')
-  let selection = window.getSelection()
-  let selectedText = (selection?.toString() || '').trim()
-  console.log(selectedText, 'selected text')
-  let isWord = /^[a-z]+[\-\']?[a-z]*$/i.test(selectedText)
+const topHandle = (type: string) => {
+  if (type === 'storage') {
+    window.postMessage({
+      type: 'req:storage',
+      data: {
+        type: 'get'
+      }
+    }, "*")
+  }
+  if (type === 'openTab') {
+    window.postMessage({
+      type: 'req:openTab',
+      data: {
+        url: 'src/entries/popup/index.html'
+      }
+    }, "*")
+  }
+}
+
+const getWords = (word: string) => {
+  console.log(word, 'selected text')
+  let isWord = /^[a-z]+[\-\']?[a-z]*$/i.test(word)
   if (isWord) {
     dialogTableVisible.value = true
 
     info.value = {
-        style: {
-          // maxWidth: '500px',
-          // position: 'fixed',
-          // left: '100px',
-          // top: '100px',
-          maxHeight: '80%',
-          margin: '15% auto 0',
-          overflow: 'auto',
-          background: 'white',
-          boxShadow: 'rgb(129 45 247) 0px 0px 6px',
-          zIndex: 10000000,
-          border: '2px solid rgb(106 0 255)',
-        },
-        title: selectedText
-      }
-    selection!.empty()
-    chrome.runtime.sendMessage({ text: e, selectedText })
+      title: word
+    }
 
     window.postMessage({
-      text: '测试',
-      word: selectedText
+      type: 'req:word-desc',
+      data: {
+        word: word
+      }
     }, "*")
-
 
   }
 }
 
-const getWordDesc = (ev: { data: ReqData<{text: string; type: WordType}>}) => {
-    if (ev.data.type === 'info:word-desc') {
-      console.log(ev.data)
-      ev.data.data.type && (wordList[ev.data.data.type].data = ev.data.data.text)
-      
+let selectionText = ref('')
+
+const getData = (e: MouseEvent) => {
+  console.log(e, 'event mouseup')
+  let selection = window.getSelection()
+  let originText = selection?.toString() || ''
+
+  if (originText && selectionText.value === originText) {
+    return false
+  }
+
+  selectionText.value = originText || ''
+
+  getWords(originText.trim())
+}
+
+const getWordDesc = (ev: { data: ReqData<any> }) => {
+  let total = Object.keys(wordList).length
+  console.log(total, 'total')
+  if (ev.data.type === 'info:word-desc') {
+    console.log(ev.data)
+    total--
+    console.log(total, 'total2')
+    ev.data.data.type && (wordList[ev.data.data.type as WordType].data = ev.data.data.text)
+
+    if (ev.data.data.status === 'close') {
+      window.postMessage({
+        type: 'req:storage',
+        data: {
+          type: 'set',
+          word: info.value.title,
+          storage: toRaw(wordList)
+        }
+      }, "*")
     }
 
+
+
   }
+  if (ev.data.type === 'info:storage-get') {
+    console.log(ev.data, '缓存数据')
+  }
+
+}
 
 onBeforeUnmount(() => {
   removeEventListener('mouseup', getData)

@@ -9,14 +9,15 @@ const manifest: chrome.runtime.Manifest = {
     "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
   },
   permissions: [
+    "webNavigation",
     "webRequest",
-    "webRequestBlocking",
     "contextMenus", // 右键菜单
 		"tabs", // 标签
 		"notifications", // 通知
 		"webRequest", // web请求
 		"webRequestBlocking",
 		"storage", // 插件本地存储
+    "unlimitedStorage", // 存储扩展
   ],
   host_permissions: ['*://*/*'],
   background: {

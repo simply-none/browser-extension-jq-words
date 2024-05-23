@@ -1,21 +1,31 @@
 <script setup lang="ts">
-import HelloWorld from '@/components/HelloWorld.vue'
 import TestPopup from '@/components/TestPopup.vue'
+import { onMounted, ref } from 'vue'
+
+let storageCache = ref({})
+
+onMounted(async () => {
+  await chrome.storage.local.get().then((items) => {
+    console.log(items, "Value is get");
+    Object.keys(items).forEach((key) => {
+      items[key] = JSON.parse(items[key])
+    })
+    storageCache.value = items;
+    console.log(storageCache, "storageCache Value is set");
+  });
+})
 </script>
 
 <template>
   <div>
-    <h1>popup</h1>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+    <!-- <el-button @click="navToWordlist">跳转</el-button> -->
+    <div v-for="(item, key) in storageCache" :key="key">
+      <h1>{{ key }}</h1>
+      <div v-text="JSON.stringify(item, null, 2)">
+      </div>
+    </div>
+    <TestPopup msg="test-popup" />
   </div>
-  
-  <HelloWorld msg="Vite + Vue" />
-  <TestPopup msg="test-popup"/>
 </template>
 
 <style scoped>
@@ -25,9 +35,11 @@ import TestPopup from '@/components/TestPopup.vue'
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.vue:hover {
   filter: drop-shadow(0 0 2em #42b883aa);
 }

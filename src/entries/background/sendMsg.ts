@@ -1,5 +1,6 @@
 import cheerio from 'cheerio'
-import { youdaoCustomEle } from './customStyle'
+import { youdaoInsertedEle, youdaoDeletedEle, bingInsertedEle, bingDeletedEle } from './customStyle'
+import { bingHeaders } from './requestHeaders';
 
 interface ReqData<T> {
   type: 'error' | `info:${string}` | `req:${string}`;
@@ -11,19 +12,26 @@ type DictType = 'youdao' | 'bing'
 interface DictInfo {
   url: string,
   querySelect: string,
-  type: DictType
+  type: DictType,
+  headers: {
+    [key: string]: string;
+  }
 }
 
 const dictSet: DictInfo[] = [
   {
     type: 'youdao',
     url: `http://youdao.com/w/wordHolder`,
-    querySelect: '#phrsListTab'
+    querySelect: '#phrsListTab',
+    headers: {
+
+    }
   },
   {
     type: 'bing',
-    url: `https://www.bing.com/dict/search?q=wordHolder`,
-    querySelect: 'body > div.contentPadding > div > div > div.lf_area > div.qdef'
+    url: `https://www.bing.com/dict/search?q=wordHolder&FORM=HDRSC6`,
+    querySelect: 'body > div.contentPadding > div > div > div.lf_area > div.qdef',
+    headers: bingHeaders,
   }
 ]
 
@@ -33,7 +41,7 @@ function listenOnceMsg(sendResponse: Function, data: ReqData<{ word: string }>) 
     return true
   }
 
-  let url = `https://www.bing.com/dict/search?q=${word}`
+  let url = `https://www.bing.com/dict/search?q=${word}&FORM=HDRSC6`
   let querySelect = 'body > div.contentPadding > div > div > div.lf_area > div.qdef'
 
   let type = 'youdao'
@@ -74,6 +82,9 @@ function listenMultiMsg(port: chrome.runtime.Port, data: ReqData<{ word: string 
   }
 
   let fetchList = getDictSet(['bing', 'youdao'], word)
+  
+  // 避免关闭请求连接的通道，特定保持5s的长连接
+  keepLongConnection(port)
 
   fetchList.forEach(item => {
     if (!item.type) {
@@ -85,7 +96,9 @@ function listenMultiMsg(port: chrome.runtime.Port, data: ReqData<{ word: string 
       })
       return false
     }
-    fetch(item.url).then(async res => {
+    fetch(item.url, {
+      headers: item.headers
+    }).then(async res => {
       const resText = await res.text()
 
       const parsedWordDesc = handleDOM(resText, item)
@@ -104,6 +117,25 @@ function listenMultiMsg(port: chrome.runtime.Port, data: ReqData<{ word: string 
 }
 
 // utils----start
+// 保持扩展插件各个通道连接不关闭
+function keepLongConnection (port: chrome.runtime.Port) {
+  let count = 0
+  const timer = setInterval(() => {
+    if (count >= 5) {
+      clearInterval(timer)
+      port.disconnect()
+      return true
+    }
+    sendToEvent(port, {
+      type: 'info:keep-long-connection',
+      data: {
+        text: '保持长连接',
+      }
+    })
+    count++
+  }, 1000)
+}
+
 // 发送请求
 function sendToEvent(port: chrome.runtime.Port, data: ReqData<{}>) {
   port.postMessage(data)
@@ -115,24 +147,31 @@ function getDictSet(select: DictType[] = ['youdao', 'bing'], word: string = '') 
     return {
       url: (item.url.replace('wordHolder', word)),
       type: item.type,
-      querySelect: item.querySelect
+      querySelect: item.querySelect,
+      headers: item.headers,
     }
   })
 }
 
-function insert(selectors: string[], html: string, customEleArr?: string[]) {
+function insert(selectors: string[], html: string, insertedEleArr?: string[], deletedEleArr?: string[]) {
   let id = 'browser-extension-jq-words'
 
   const $new = cheerio.load(`<div id='${id}'></div>`);
   const $ = cheerio.load(html);
 
+  if (deletedEleArr) {
+    deletedEleArr.forEach(deletedEle => {
+      $(deletedEle).remove()
+    })
+  }
+
   selectors.forEach(async selector => {
     await elementToNewNode($new(`#${id}`), $, selector)
   })
 
-  if (customEleArr) {
-    customEleArr.forEach(customEle => {
-      $(customEle).appendTo($new(`#${id}`))
+  if (insertedEleArr) {
+    insertedEleArr.forEach(insertedEle => {
+      $(insertedEle).appendTo($new(`#${id}`))
     })
   }
   return $new
@@ -153,7 +192,7 @@ const handleDomInfo: {
       '#phrsListTab > h2',
       '#phrsListTab > div.trans-container',
       '#authTrans',
-      'link[rel="stylesheet"]',
+      // 'link[rel="stylesheet"]',
       'style'
     ]
 
@@ -161,7 +200,7 @@ const handleDomInfo: {
     // $('#webTrans').remove()
     // $('#wordArticle').remove()
     // $('#eTransform').remove()
-    let parsedWordDesc = insert(selectList, resText, youdaoCustomEle)
+    let parsedWordDesc = insert(selectList, resText, youdaoInsertedEle, youdaoDeletedEle)
     // $('<h1 class="plum" style="font-size: 36px;">Plum</h1>').prependTo(parsedWordDesc)
     // console.log(parsedWordDesc, 2)
     return parsedWordDesc.html() || ''
@@ -172,14 +211,13 @@ const handleDomInfo: {
       'div.contentPadding > div > div > div.lf_area > div.qdef > div.hd_area',
       'div.contentPadding > div > div > div.lf_area > div.qdef > ul',
       '#sentenceSeg > div.se_li',
-      'link[rel="stylesheet"]',
+      // 'link[rel="stylesheet"]',
       'style'
     ]
     // const $ = cheerio.load(resText)
     // $('.img_area').remove()
     
-    let parsedWordDesc = insert(selectList, resText)
-
+    let parsedWordDesc = insert(selectList, resText, bingInsertedEle, bingDeletedEle)
     
     // $('<h1 class="plum" style="font-size: 36px;">Plum</h1>').prependTo(parsedWordDesc)
     
