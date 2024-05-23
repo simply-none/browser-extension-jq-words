@@ -59,6 +59,10 @@ const topHandle = (type: string) => {
 const getWords = (word: string) => {
   console.log(word, 'selected text')
   let isWord = /^[a-z]+[\-\']?[a-z]*$/i.test(word)
+  if (word.length > 20) {
+    // 查词字数不可超过20
+    return false
+  }
   if (isWord) {
     dialogTableVisible.value = true
 

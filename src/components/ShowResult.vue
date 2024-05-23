@@ -26,7 +26,7 @@
           <div class="jade-dialog__title">{{ item.name }}</div>
         </template>
         <div v-if="item.data.length > 0" class="jade-dialog__content">
-          <div :style="{ height: contentHeight }" v-html="item.data" class="jade-dialog__content-body"></div>
+          <div :style="{ height: expandItems[key].expand ? 'auto' : '256px' }" v-html="item.data" class="jade-dialog__content-body"></div>
           <div class="jade-dialog__content-expand" @click="setContentHeight(expandItems[key])">
             <template v-if="expandItems[key].expand">
               <el-icon>
