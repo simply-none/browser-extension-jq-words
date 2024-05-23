@@ -1,12 +1,39 @@
 
-window.addEventListener("message", function (ev) {
+window.addEventListener("message", async function (ev) {
   if (ev.data.type === 'req:word-desc') {
     reqWordDesc(ev.data)
   }
   if (ev.data.type === 'req:storage') {
     reqStorage(ev.data)
   }
+  if (ev.data.type === 'req:openTab') {
+    // const url = chrome.runtime.getURL(ev.data.data.url)
+    // const tab = await chrome.tabs.create({ url: url })
+    // console.log(tab, 'tab')
+    reqOpenTab(ev.data)
+  }
 })
+
+async function reqOpenTab (data: { type: string, data: { type: string, url: any } }) {
+  const port = chrome.runtime.connect({ name: 'req:openTab--'+ data.data.url });
+
+  port.postMessage({
+    type: 'req:openTab',
+    data: {
+      url: data.data.url
+    }
+  });
+
+  port.onMessage.addListener(function (msg) {
+    console.log(msg, 'port msg content scripts', Date.now())
+    if (msg.type === 'info:openTab') {
+      window.postMessage({
+        type: 'info:openTab',
+        data: msg.data
+      }, "*")
+    }
+  });
+}
 
 async function reqStorage (data: { type: string, data: { type: string, storage: any, word: string } }) {
   console.log(data, '测试')

@@ -1,15 +1,20 @@
 <script setup lang="ts">
-import TestPopup from '@/components/TestPopup.vue'
 import { onMounted, ref } from 'vue'
 
 let storageCache = ref({})
 
+const deleteItem = (key: string) => {
+  chrome.storage.local.remove(key).then(res => {
+    console.log(res, '删除后提示的内容')
+  })
+}
+
 onMounted(async () => {
   await chrome.storage.local.get().then((items) => {
     console.log(items, "Value is get");
-    Object.keys(items).forEach((key) => {
-      items[key] = JSON.parse(items[key])
-    })
+    // Object.keys(items).forEach((key) => {
+    //   items[key] = JSON.parse(items[key])
+    // })
     storageCache.value = items;
     console.log(storageCache, "storageCache Value is set");
   });
@@ -18,17 +23,16 @@ onMounted(async () => {
 
 <template>
   <div>
-    <!-- <el-button @click="navToWordlist">跳转</el-button> -->
-    <div v-for="(item, key) in storageCache" :key="key">
-      <h1>{{ key }}</h1>
-      <div v-text="JSON.stringify(item, null, 2)">
-      </div>
+    <div v-for="(, key) in storageCache" :key="key">
+      <div>{{ key }}</div>
+      <el-button @click="deleteItem(key)">删除</el-button>
     </div>
-    <TestPopup msg="test-popup" />
   </div>
 </template>
 
 <style scoped>
+@import url('element-plus/dist/index.css');
+
 .logo {
   height: 6em;
   padding: 1.5em;

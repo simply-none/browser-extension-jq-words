@@ -47,30 +47,6 @@
         </div>
       </el-collapse-item>
     </el-collapse>
-
-    <!-- <div v-for="(item, key) in wordList" :key="key">
-      <h2 class="jade-dialog__title">{{ item.name }}</h2>
-      <div v-if="item.data.length > 0" class="jade-dialog__content">
-        <div :style="{ height: contentHeight }" v-html="item.data" class="jade-dialog__content-body"></div>
-        <div class="jade-dialog__content-expand" @click="setContentHeight">
-          <template v-if="contentHeight === 'auto'">
-            <el-icon>
-              <ArrowUp />
-            </el-icon>
-            <span>折叠</span>
-          </template>
-          <template v-else>
-            <el-icon>
-              <ArrowDown />
-            </el-icon>
-            <span>展开</span>
-          </template>
-        </div>
-      </div>
-      <div v-else class="jade-dialog__content jade-dialog__content--null">
-        <span>数据正在加载中，请稍后......</span>
-      </div>
-    </div> -->
   </el-dialog>
 </template>
 
@@ -244,7 +220,7 @@ onMounted(() => {
       }
 
       &-expand {
-        background-color: #efefef;
+        background-color: #f5f5f5;
         padding: 3px;
         text-align: center;
         margin: 0 auto;

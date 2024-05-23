@@ -9,6 +9,8 @@ const youdaoInsertedEle = [
   }
   #collinsResult .examples {
     height: unset;
+    box-shadow: unset;
+    padding: 0;
   }
   .tabs a span, .tab-current span {
     padding: 0;

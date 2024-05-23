@@ -192,7 +192,7 @@ const handleDomInfo: {
       '#phrsListTab > h2',
       '#phrsListTab > div.trans-container',
       '#authTrans',
-      // 'link[rel="stylesheet"]',
+      'link[rel="stylesheet"]',
       'style'
     ]
 
@@ -203,6 +203,9 @@ const handleDomInfo: {
     let parsedWordDesc = insert(selectList, resText, youdaoInsertedEle, youdaoDeletedEle)
     // $('<h1 class="plum" style="font-size: 36px;">Plum</h1>').prependTo(parsedWordDesc)
     // console.log(parsedWordDesc, 2)
+    // chrome.storage.local.set({youdao: parsedWordDesc.html()}).then(() => {
+    //   console.log("Value is set");
+    // });
     return parsedWordDesc.html() || ''
   },
   bing(resText, item) {
@@ -211,7 +214,7 @@ const handleDomInfo: {
       'div.contentPadding > div > div > div.lf_area > div.qdef > div.hd_area',
       'div.contentPadding > div > div > div.lf_area > div.qdef > ul',
       '#sentenceSeg > div.se_li',
-      // 'link[rel="stylesheet"]',
+      'link[rel="stylesheet"]',
       'style'
     ]
     // const $ = cheerio.load(resText)

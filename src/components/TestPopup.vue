@@ -93,8 +93,11 @@ const getData = (e: MouseEvent) => {
 }
 
 const getWordDesc = (ev: { data: ReqData<any> }) => {
+  if (!ev.data.type) {
+    return false
+  }
   let total = Object.keys(wordList).length
-  console.log(total, 'total')
+  console.log(total, ev, 'total')
   if (ev.data.type === 'info:word-desc') {
     console.log(ev.data)
     total--

@@ -3,7 +3,7 @@ const {join}  = require('path');
 
 const cdPath = join(__dirname, "./dist/assets/src/entries/content");
 const jsFiles = readdirSync(`${cdPath}`);
-const scriptUrlList = jsFiles.map((file) => {
+const scriptUrlList = jsFiles.filter(file => /\.js$/.test(file)).map((file) => {
   return `"assets/src/entries/content/${file}"`;
 });
 
@@ -60,9 +60,17 @@ cssUrlList.forEach(url=>{
     (document.head || document.documentElement).appendChild(s);
 })`;
 
+const insertMainIframe = `
+let div = document.createElement('div')
+div.setAttribute('id', 'jade-custom')
+let firstChild = document.body.firstChild
+document.body.insertBefore(div, firstChild)
+`
+
 const scriptText = `
 ${text}
 ${cssText}
+${insertMainIframe}
 `
 
 writeFileSync("./dist/src/entries/contentScripts/script.js", scriptText, "utf-8");

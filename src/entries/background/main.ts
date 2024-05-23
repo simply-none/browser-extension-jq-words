@@ -12,9 +12,9 @@ import type {
 
 chrome.runtime.onInstalled.addListener(async () => {
   // 打开新标签页
-  const url = chrome.runtime.getURL('src/entries/popup/index.html')
-  const tab = await chrome.tabs.create({ url: url })
-  console.log(`Created tab ${tab.id}`)
+  // const url = chrome.runtime.getURL('src/entries/popup/index.html')
+  // const tab = await chrome.tabs.create({ url: url })
+  // console.log(`Created tab ${tab.id}`)
 })
 
 chrome.runtime.onConnect.addListener(function (port) {

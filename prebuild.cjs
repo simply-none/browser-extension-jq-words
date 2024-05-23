@@ -11,10 +11,10 @@ var _a = require('fs'), writeFileSync = _a.writeFileSync, readdirSync = _a.readd
 var join = require('path').join;
 var cdPath = join(__dirname, "./dist/assets/src/entries/content");
 var jsFiles = readdirSync("".concat(cdPath));
-var scriptUrlList = jsFiles.map(function (file) {
+var scriptUrlList = jsFiles.filter(function (file) { return /\.js$/.test(file); }).map(function (file) {
     return "\"assets/src/entries/content/".concat(file, "\"");
 });
-var text = "\nconst scriptUrlList = [".concat(scriptUrlList, "];\nscriptUrlList.forEach(url=>{\n    const s = document.createElement('script');\n    s.src = chrome.runtime.getURL(url);\n    s.setAttribute('type', 'text/javascript');\n    s.setAttribute('class', 'jousindea-script');\n    s.onload = function() {\n    };\n    (document.head || document.documentElement).appendChild(s);\n})");
+var text = "\nconst scriptUrlList = [".concat(scriptUrlList, "];\nscriptUrlList.forEach(url=>{\n    const s = document.createElement('script');\n    s.src = chrome.runtime.getURL(url);\n    s.setAttribute('type', 'module');\n    s.setAttribute('class', 'jousindea-script');\n    s.onload = function() {\n    };\n    (document.head || document.documentElement).appendChild(s);\n})");
 // const cssPath1 = join(__dirname, "./dist/assets/node_modules/element-plus/dist");
 var cssPath2 = join(__dirname, "./dist/assets");
 // let cssFiles1 = readdirSync(`${cssPath1}`);
@@ -37,5 +37,6 @@ cssFiles.forEach(function (file) {
 manifest.web_accessible_resources[0].resources = webRes;
 writeFileSync('./dist/manifest.json', JSON.stringify(manifest, null, 2));
 var cssText = "\nconst cssUrlList = [".concat(cssFiles, "];\nconsole.log(cssUrlList, 'list')\ncssUrlList.forEach(url=>{\n  console.log(url, 'url')\n    const s = document.createElement('link');\n    s.href = chrome.runtime.getURL(url);\n    s.setAttribute('rel', 'stylesheet');\n    s.setAttribute('class', 'jousindea-style');\n    s.onload = function() {\n    };\n    (document.head || document.documentElement).appendChild(s);\n})");
-var scriptText = "\n".concat(text, "\n").concat(cssText, "\n");
+var insertMainIframe = "\nlet div = document.createElement('div')\ndiv.setAttribute('id', 'jade-custom')\nlet firstChild = document.body.firstChild\ndocument.body.insertBefore(div, firstChild)\n";
+var scriptText = "\n".concat(text, "\n").concat(cssText, "\n").concat(insertMainIframe, "\n");
 writeFileSync("./dist/src/entries/contentScripts/script.js", scriptText, "utf-8");
