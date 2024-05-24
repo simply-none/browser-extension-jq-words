@@ -185,6 +185,11 @@ onMounted(() => {
         pointer-events: all;
         cursor: pointer;
       }
+      .el-input-group__append {
+        box-shadow: unset;
+        background: #999999;
+        color: #000000;
+      }
     }
 
     &__inner {
@@ -234,7 +239,7 @@ onMounted(() => {
     }
 
     .el-dialog__header {
-      padding: 6px;
+      padding: 6px 6px 6px 0;
       background: #5e00e1;
       width: 100%;
       box-sizing: border-box;

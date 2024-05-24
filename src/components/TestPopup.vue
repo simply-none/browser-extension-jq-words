@@ -17,10 +17,18 @@ let info = ref({
   title: '',
 })
 
-type WordType = 'youdao' | 'bing'
+type WordType = 'youdao' | 'bing' | 'collins'
 
 
 let wordList = reactive({
+  collins: {
+    type: 'collins',
+    name: 'collins词典',
+    data: '',
+    phonetic: '',
+    translate: '',
+    expand: false,
+  },
   youdao: {
     type: 'youdao',
     name: '有道词典',

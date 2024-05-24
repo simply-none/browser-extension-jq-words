@@ -23,6 +23,7 @@ const manifest: chrome.runtime.Manifest = {
   background: {
     service_worker: 'src/entries/background/main.ts',
   },
+  // 该内容会注入到匹配到网站当中
   content_scripts: [
     {
       matches: ['<all_urls>'],

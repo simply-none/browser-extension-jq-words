@@ -9,6 +9,11 @@ import { ElDialog } from 'element-plus'
 // 关闭打开dialog时，element-plus给body加的样式：overflow:hidden;
 ElDialog.props.lockScroll.default = false
 
+let div = document.createElement('div')
+div.setAttribute('id', 'jade-custom')
+let firstChild = document.body.firstChild
+document.body.insertBefore(div, firstChild)
+
 const app = createApp(App)
 
 app.use(ElementPlus)

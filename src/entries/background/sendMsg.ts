@@ -1,13 +1,12 @@
 import cheerio from 'cheerio'
-import { youdaoInsertedEle, youdaoDeletedEle, bingInsertedEle, bingDeletedEle } from './customStyle'
-import { bingHeaders } from './requestHeaders';
-
+import { youdaoInsertedEle, youdaoDeletedEle, collinsDeletedEle, collinsInsertedEle, bingInsertedEle, bingDeletedEle } from './customStyle'
+import { bingHeaders, collinsHeaders } from './requestHeaders';
 interface ReqData<T> {
   type: 'error' | `info:${string}` | `req:${string}`;
   data: T;
 }
 
-type DictType = 'youdao' | 'bing'
+type DictType = 'youdao' | 'bing' | 'collins'
 
 interface DictInfo {
   url: string,
@@ -26,6 +25,12 @@ const dictSet: DictInfo[] = [
     headers: {
 
     }
+  },
+  {
+    type: 'collins',
+    url: `https://www.collinsdictionary.com/dictionary/english-chinese/wordHolder`,
+    querySelect: 'body',
+    headers: collinsHeaders,
   },
   {
     type: 'bing',
@@ -81,8 +86,8 @@ function listenMultiMsg(port: chrome.runtime.Port, data: ReqData<{ word: string 
     return true
   }
 
-  let fetchList = getDictSet(['bing', 'youdao'], word)
-  
+  let fetchList = getDictSet(['bing', 'youdao', 'collins'], word)
+
   // 避免关闭请求连接的通道，特定保持5s的长连接
   // keepLongConnection(port)
 
@@ -99,9 +104,28 @@ function listenMultiMsg(port: chrome.runtime.Port, data: ReqData<{ word: string 
     fetch(item.url, {
       headers: item.headers
     }).then(async res => {
+
       const resText = await res.text()
 
-      const parsedWordDesc = handleDOM(resText, item)
+      // sendToEvent(port, {
+      //   type: 'info:word-desc',
+      //   data: {
+      //     text: resText,
+      //     key: '测试',
+      //     ...item
+      //   }
+      // })
+
+      chrome.storage.local.set({
+        [word + '-' + item.type + '-' + Date.now()]: {
+          [item.type]: {
+            data: resText,
+            time: Date.now()
+          }
+        }
+      })
+
+      const parsedWordDesc = handleDOM(port, resText, item)
 
       console.log(parsedWordDesc, 1)
 
@@ -118,7 +142,7 @@ function listenMultiMsg(port: chrome.runtime.Port, data: ReqData<{ word: string 
 
 // utils----start
 // 保持扩展插件各个通道连接不关闭
-export function keepLongConnection (port: chrome.runtime.Port) {
+export function keepLongConnection(port: chrome.runtime.Port) {
   let count = 0
   const timer = setInterval(() => {
     if (count >= 5) {
@@ -141,7 +165,7 @@ function sendToEvent(port: chrome.runtime.Port, data: ReqData<{}>) {
   port.postMessage(data)
 }
 
-function getDictSet(select: DictType[] = ['youdao', 'bing'], word: string = '') {
+function getDictSet(select: DictType[] = ['youdao', 'bing', 'collins'], word: string = '') {
   let selectDictSet = dictSet.filter(item => select.includes(item.type))
   return selectDictSet.map(item => {
     return {
@@ -184,57 +208,76 @@ async function elementToNewNode(newEle: any, oldEle: any, selector: string) {
 }
 
 const handleDomInfo: {
-  [key in DictType]: (resText: string, item: DictInfo) => string
+  [key in DictType]: (port: chrome.runtime.Port, resText: string, item: DictInfo) => string
 } = {
-  youdao(resText, item) {
+  collins(port: chrome.runtime.Port, resText, item) {
     console.log(item)
+    const selectList = [
+      'body',
+      'style'
+    ]
+
+    let parsedWordDesc = insert(selectList, resText, collinsInsertedEle, collinsDeletedEle)
+    sendToEvent(port, {
+      type: 'info:测试word-desc',
+      data: {
+        text: parsedWordDesc,
+        key: '测试',
+        ...item
+      }
+    })
+    return parsedWordDesc.html() || ''
+  },
+  youdao(port: chrome.runtime.Port, resText, item) {
+    console.log(item, port)
     const selectList = [
       '#phrsListTab > h2',
       '#phrsListTab > div.trans-container',
       '#authTrans',
-      'link[rel="stylesheet"]',
       'style'
     ]
 
-    // const $ = cheerio.load(resText)
-    // $('#webTrans').remove()
-    // $('#wordArticle').remove()
-    // $('#eTransform').remove()
     let parsedWordDesc = insert(selectList, resText, youdaoInsertedEle, youdaoDeletedEle)
-    // $('<h1 class="plum" style="font-size: 36px;">Plum</h1>').prependTo(parsedWordDesc)
-    // console.log(parsedWordDesc, 2)
-    // chrome.storage.local.set({youdao: parsedWordDesc.html()}).then(() => {
-    //   console.log("Value is set");
-    // });
+
+    sendToEvent(port, {
+      type: 'info:测试word-desc',
+      data: {
+        text: parsedWordDesc,
+        key: '测试',
+        ...item
+      }
+    })
+
     return parsedWordDesc.html() || ''
   },
-  bing(resText, item) {
-    console.log(item)
+  bing(port: chrome.runtime.Port, resText, item) {
+    console.log(item, port)
     const selectList = [
       'div.contentPadding > div > div > div.lf_area > div.qdef > div.hd_area',
       'div.contentPadding > div > div > div.lf_area > div.qdef > ul',
       '#sentenceSeg > div.se_li',
-      'link[rel="stylesheet"]',
       'style'
     ]
-    // const $ = cheerio.load(resText)
-    // $('.img_area').remove()
-    
+
     let parsedWordDesc = insert(selectList, resText, bingInsertedEle, bingDeletedEle)
-    
-    // $('<h1 class="plum" style="font-size: 36px;">Plum</h1>').prependTo(parsedWordDesc)
-    
-    // console.log(parsedWordDesc, 2)
+    sendToEvent(port, {
+      type: 'info:测试word-desc',
+      data: {
+        text: parsedWordDesc,
+        key: '测试',
+        ...item
+      }
+    })
     return parsedWordDesc.html() || ''
   },
 
 }
 
-function handleDOM(resText: string, item: DictInfo) {
+function handleDOM(port: chrome.runtime.Port, resText: string, item: DictInfo) {
 
   let parsedText = ''
   if (item.type) {
-    parsedText = handleDomInfo[item.type](resText, item)
+    parsedText = handleDomInfo[item.type](port, resText, item)
   }
   return parsedText
 }
