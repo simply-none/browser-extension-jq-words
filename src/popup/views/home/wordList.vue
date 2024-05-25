@@ -26,7 +26,7 @@ let storageCache = ref({})
 
 onMounted(async () => {
   await chrome.storage.local.get().then((items) => {
-    // console.log(items, "Value is get");
+    console.log(items, "Value is get");
     Object.keys(items).forEach((key) => {
       console.log(key, "key is get")
       // items[key] = JSON.parse(items[key])

@@ -5,6 +5,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "dev": "vite",
     "dev:content": "vite --host --mode content",
     "build:content": "vite build --mode content",
     "dev:popup": "vite --host --mode popup",

@@ -21,27 +21,27 @@ const manifest: chrome.runtime.Manifest = {
   ],
   host_permissions: ['*://*/*'],
   background: {
-    service_worker: 'src/entries/background/main.ts',
+    service_worker: 'src/background/main.ts',
   },
   // 该内容会注入到匹配到网站当中
   content_scripts: [
     {
       matches: ['<all_urls>'],
       js: [
-        'src/entries/content/main.ts',
-        'src/entries/contentScripts/event.ts',
-        'src/entries/contentScripts/script.ts'
+        'src/content/main.ts',
+        'src/contentScripts/event.ts',
+        'src/contentScripts/script.ts'
       ],
       css: [
-        'src/entries/content/style.css'
+        'src/content/style.css'
       ]
     }
   ],
   action: {
-    default_popup: 'src/entries/popup/index.html',
+    default_popup: 'src/popup/index.html',
   },
   options_ui: {
-    page: 'src/entries/options/index.html',
+    page: 'src/options/index.html',
     open_in_tab: false,
   },
 }

@@ -39,10 +39,10 @@ function contentStyleInsertToPage() {
 
 // example
 function insertToPage() {
-	const cdPath = join(__dirname, "./dist/assets/src/entries/content");
+	const cdPath = join(__dirname, "./dist/assets/src/content");
 	const jsFiles = readdirSync(`${cdPath}`);
 	const scriptUrlList = jsFiles.filter(file => /\.js$/.test(file)).map((file) => {
-		return `"assets/src/entries/content/${file}"`;
+		return `"assets/src/content/${file}"`;
 	});
 
 	const text = `
@@ -60,7 +60,7 @@ function insertToPage() {
 	const scriptText = `
         ${text}
     `
-	// ./dist/src/entries/contentScripts/script.js：该文件是在content_scripts中定义过的，
+	// ./dist/src/contentScripts/script.js：该文件是在content_scripts中定义过的，
 	// 这种不是最优解，最优解是直接将需要嵌入到页面中的文件，直接写入到manifest.json文件中
-	writeFileSync("./dist/src/entries/contentScripts/script.js", scriptText, "utf-8");
+	writeFileSync("./dist/src/contentScripts/script.js", scriptText, "utf-8");
 }

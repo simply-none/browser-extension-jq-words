@@ -26,8 +26,7 @@
           <div class="jade-dialog__title">{{ item.name }}</div>
         </template>
         <div v-if="item.data.length > 0" class="jade-dialog__content">
-          <div :style="{ height: expandItems[key].expand ? 'auto' : '256px' }" v-html="item.data"
-            class="jade-dialog__content-body"></div>
+          <div :style="{ height: computedHeight(key) }" v-html="item.data" class="jade-dialog__content-body"></div>
           <div class="jade-dialog__content-expand" @click="setContentHeight(expandItems[key])">
             <template v-if="expandItems[key].expand">
               <el-icon>
@@ -111,11 +110,12 @@ const expandPanel = computed({
   set() { }
 })
 
-const expandItems = computed({
-  get() {
-    return props.wordList
-  },
-  set() { }
+const expandItems = computed(() => props.wordList)
+
+let computedHeight = computed(() => (key: string | number) => {
+  if (expandItems.value[key].expand) return 'auto'
+  if (expandItems.value[key].data === '') return 'auto'
+  return '256px'
 })
 
 const topHandle = (type: string) => {
@@ -185,6 +185,7 @@ onMounted(() => {
           box-shadow: unset;
           background: #5e00e1;
           color: #ffffff;
+
           &:hover {
             background-color: #844ad5;
           }

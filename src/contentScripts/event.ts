@@ -60,7 +60,7 @@ async function reqStorage (data: { type: string, data: { type: string, storage: 
   
 }
 
-function reqWordDesc (data: { type: string, data: { word: string } }){
+function reqWordDesc (data: { type: string, data: { word: string, cacheOrigin: CacheOrigin } }){
     console.log(data, '测试')
 
     const port = chrome.runtime.connect({ name: 'req:word-desc--'+ data.data.word });
@@ -68,7 +68,8 @@ function reqWordDesc (data: { type: string, data: { word: string } }){
     port.postMessage({
       type: 'req:word-desc',
       data: {
-        word: data.data.word
+        word: data.data.word,
+        cacheOrigin: data.data.cacheOrigin
       }
     });
 

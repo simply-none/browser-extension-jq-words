@@ -29,14 +29,6 @@ async function getText() {
 //   console.log(newText);
 // }
 
-const selectList = [
-  "#phrsListTab > h2",
-  "#phrsListTab > div.trans-container",
-  "#authTrans",
-  'link[rel="stylesheet"]',
-  "style",
-];
-
 const collinsInsertedEle = [
   // `
   // .cB {
@@ -74,7 +66,7 @@ const collinsDeletedEle = [
 function collins(resText) {
   const selectList = [
     "body",
-    // 'script',
+    'script',
     "style",
   ];
 
@@ -97,6 +89,9 @@ function insert(selectors, html, insertedEleArr, deletedEleArr) {
   const $new = cheerio.load(`<div id='${id}'></div>`);
   const $ = cheerio.load(html);
 
+  const div = $('div')
+  console.log(div.length, 'div')
+
   if (deletedEleArr) {
     deletedEleArr.forEach((deletedEle) => {
       $(deletedEle).remove();
@@ -104,6 +99,20 @@ function insert(selectors, html, insertedEleArr, deletedEleArr) {
   }
 
   selectors.forEach(async (selector) => {
+    if (selector === 'style') {
+      $(selector).each(function(i, elem) {
+        let currentStyle = $(this).html()
+        currentStyle = `
+        <style>
+          @scope (#${id}) {
+            ${currentStyle}
+          }
+        </style>
+        `
+        $(currentStyle).appendTo($new(`#${id}`));
+      });
+      return true
+    }
     await elementToNewNode($new(`#${id}`), $, selector);
   });
 
@@ -121,7 +130,11 @@ async function elementToNewNode(newEle, oldEle, selector) {
   // console.log(newText);
 }
 
-const a = collins(html)
-writeFileSync('./cheerio-test.html', a, 'utf-8')
+// const a = collins(html)
+// writeFileSync('./cheerio-test.html', a, 'utf-8')
 
-console.log(manifest);
+const a = cheerio.load(html)
+
+a('#phrsListTab > div.trans-container > ul > li').each(function() {
+  console.log(a(this).text(), '测试')
+})

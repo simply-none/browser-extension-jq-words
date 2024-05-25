@@ -14,7 +14,7 @@ const openNewTab = (e: MouseEvent) => {
   console.log(id.value, e, '获取鼠标当前坐标')
   chrome.tabs.create(
     {
-      url: 'src/entries/popup/index.html?name=Home',
+      url: 'src/popup/index.html?name=Home',
     },
     (tab) => {
       console.log(tab, 'tab')

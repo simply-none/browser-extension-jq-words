@@ -2,12 +2,18 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import About from '../views/About.vue'
+import SelectWordPanel from '../views/SelectWordPanel.vue'
 
 const routes = [
   {
     path: '/',
     name: 'Home',
     component: Home
+  },
+  {
+    path: '/SelectWordPanel',
+    name: 'SelectWordPanel',
+    component: SelectWordPanel
   },
   {
     path: '/about',

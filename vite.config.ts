@@ -24,7 +24,7 @@ let config: UserConfig = {
   plugins: [
     vue(),
     visualizer({
-      open: true
+      // open: true
     }),
     viteCompression(),
     AutoImport({
@@ -62,7 +62,7 @@ export default defineConfig(({ mode, command }) => {
 
 
   if (mode === 'content') {
-    config.root = resolve(__dirname, 'src/entries/content')
+    config.root = resolve(__dirname, 'src/content')
     config.server = {
       host: '0.0.0.0',
       port: 5190
@@ -70,7 +70,7 @@ export default defineConfig(({ mode, command }) => {
   }
 
   if (mode === 'popup') {
-    config.root = resolve(__dirname, 'src/entries/popup')
+    config.root = resolve(__dirname, 'src/popup')
     config.server = {
       host: '0.0.0.0',
       port: 5290
@@ -78,7 +78,7 @@ export default defineConfig(({ mode, command }) => {
   }
 
   if (mode === 'options') {
-    config.root = resolve(__dirname, 'src/entries/options')
+    config.root = resolve(__dirname, 'src/options')
     config.server = {
       host: '0.0.0.0',
       port: 5390

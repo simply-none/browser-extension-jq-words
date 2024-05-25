@@ -22,7 +22,8 @@
 
     /* Linting */
     "strict": true,
-    "noUnusedLocals": true,
+    // 关闭变量声明但未使用的报错
+    "noUnusedLocals": false,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },

@@ -62,13 +62,13 @@ const topHandle = (type: string) => {
     window.postMessage({
       type: 'req:openTab',
       data: {
-        url: 'src/entries/popup/index.html?name=Home'
+        url: 'src/popup/index.html?name=Home'
       }
     }, "*")
   }
 }
 
-const getWords = (word: string) => {
+const getWords = (word: string, cacheOrigin?: CacheOrigin) => {
   console.log(word, 'selected text')
   let isWord = /^[a-z]+[\-\']?[a-z]*$/i.test(word)
   if (word.length > 30) {
@@ -85,7 +85,8 @@ const getWords = (word: string) => {
     window.postMessage({
       type: 'req:word-desc',
       data: {
-        word: word
+        word: word,
+        cacheOrigin
       }
     }, "*")
 
@@ -105,7 +106,10 @@ const getData = (e: MouseEvent) => {
 
   selectionText.value = originText || ''
 
-  getWords(originText.trim())
+  getWords(originText.trim(), {
+    href: location.href,
+    example: (e.target as unknown as HTMLElement).innerText
+  })
 }
 
 const getWordDesc = (ev: { data: ReqData<any> }) => {

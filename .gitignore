@@ -14,6 +14,11 @@ dist-ssr
 *.local
 
 cheerio-test.html
+cheerio*
+cheerio-test-style*
+auto-imports.d.ts
+components.d.ts
+stats.html
 
 # Editor directories and files
 .vscode/*
