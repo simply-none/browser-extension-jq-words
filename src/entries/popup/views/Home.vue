@@ -5,8 +5,6 @@ import  WordList  from './home/wordList.vue'
 
 <template>
   <WordList/>
-  <router-link to="/">home</router-link>
-  <router-link to="/about">home</router-link>
   <router-view/>
 </template>
 

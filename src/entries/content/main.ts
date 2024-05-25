@@ -1,8 +1,9 @@
 import { createApp } from 'vue'
-import ElementPlus from 'element-plus'
-import 'element-plus/dist/index.css'
+// import ElementPlus from 'element-plus'
 import './style.css'
 import App from './App.vue'
+
+import router from './router'
 
 import { ElDialog } from 'element-plus'
 
@@ -16,6 +17,10 @@ document.body.insertBefore(div, firstChild)
 
 const app = createApp(App)
 
-app.use(ElementPlus)
+// app.use(ElementPlus)
 
-app.mount('#jade-custom')
+app.use(router)
+
+router.isReady().then(() => {
+  app.mount('#jade-custom')
+})

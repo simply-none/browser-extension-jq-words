@@ -74,6 +74,9 @@ const collinsInsertedEle: string[] = [
   .page .lbl, .page .colloc {
     font-size: 16px;
   }
+  main>div#main_content {
+    width: 100% !important;
+  }
   </style>
   `
 ]

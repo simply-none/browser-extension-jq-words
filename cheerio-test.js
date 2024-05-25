@@ -122,6 +122,6 @@ async function elementToNewNode(newEle, oldEle, selector) {
 }
 
 const a = collins(html)
-writeFileSync('./collins.html', a, 'utf-8')
+writeFileSync('./cheerio-test.html', a, 'utf-8')
 
 console.log(manifest);
