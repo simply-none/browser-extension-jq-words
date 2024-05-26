@@ -251,6 +251,9 @@ const getWordDesc = (ev: { data: ReqData<ReqDataType> }) => {
     if (ev.data.data.type) {
       // TODO：加上！表示对象已定义，不然会报未定义的错误
       // TODO:这里第一次初始化时会报错
+      if (!selectedWordList[ev.data.data.type]) {
+        selectedWordList[ev.data.data.type] = {} as WordItem
+      }
       selectedWordList[ev.data.data.type]!.data = ev.data.data.text
     }
 

@@ -21,7 +21,7 @@
 
     </template>
     <el-collapse v-model="expandPanel">
-      <el-collapse-item v-for="(item, key) in wordList" :key="key" :title="item.name" :name="key">
+      <el-collapse-item v-for="(item, key) in computedWordList" :key="key" :title="item.name" :name="key">
         <template #title>
           <div class="jade-dialog__title">{{ item.name }}</div>
         </template>
@@ -54,7 +54,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, onBeforeUnmount, computed, watch } from 'vue'
+import { onMounted, ref, onBeforeUnmount, computed, watch, reactive } from 'vue'
 import WordFrame from './WordFrame.vue';
 import {
   Star,
@@ -86,6 +86,38 @@ const props = defineProps<{
   }>
 }>()
 
+const computedWordList: Record<DictType, {
+      type: string,
+      data: string,
+      name: string,
+      expand: boolean
+  }> = computed(() => {
+  const wl = JSON.parse(JSON.stringify(props.wordList))
+  Object.keys(wl).forEach((key) => {
+    if(!wl[key].data) {
+      delete wl[key]
+    }
+  })
+  return wl
+}) as unknown as Record<DictType, {
+      type: string,
+      data: string,
+      name: string,
+      expand: boolean
+  }>
+
+let selectedWordList: Record<DictType, {
+  type: string,
+  data: string,
+  name: string,
+  expand: boolean
+}> = reactive({}) as  Record<DictType, {
+  type: string,
+  data: string,
+  name: string,
+  expand: boolean
+}>
+
 const emit = defineEmits(['closeDialog', 'getWords', 'topHandle'])
 
 let visible = computed(() => {
@@ -99,11 +131,17 @@ watch(() => props.info.title, (val) => {
 
 })
 
-watch(() => props.wordList, (val, old) => {
-  console.log(val, old)
-}, {
-  deep: true
-})
+// watch(() => props.wordList, (val, old) => {
+//   console.log(val, old)
+//   selectedWordList = val
+//   Object.keys(selectedWordList).forEach((key) => {
+//     if(!selectedWordList[key as DictType].data) {
+//       delete selectedWordList[key as DictType]
+//     }
+//   })
+// }, {
+//   deep: true
+// })
 
 const expandPanel = computed({
   get() {

@@ -41,7 +41,7 @@ function listenOnceMsg(sendResponse: Function, data: ReqData<{ word: string }>) 
   })
 }
 
-function listenMultiMsg(port: chrome.runtime.Port, data: ReqData<{ word: string, cacheOrigin: CacheOrigin }>) {
+async function listenMultiMsg(port: chrome.runtime.Port, data: ReqData<{ word: string, cacheOrigin: CacheOrigin }>) {
   let word = data.data.word
   if (!word) {
     sendToEvent(port, {
@@ -53,7 +53,16 @@ function listenMultiMsg(port: chrome.runtime.Port, data: ReqData<{ word: string,
     return true
   }
 
-  let selectWordTypeGroup: DictType[] = ['bing', 'youdao', 'collins', 'jinshan', 'longman', 'cambridge', 'webster', 'oxford', 'vocabulary', 'wordreference', 'haici']
+  let selectWordTypes:DictType[] = ['youdao', 'bing', 'longman']
+  await chrome.storage.local.get('setting:selectedWordTypes').then((items) => {
+    console.log(items, "Value is get");
+    const fetchWordTypes = items['setting:selectedWordTypes']
+    if (fetchWordTypes) {
+      selectWordTypes = JSON.parse(fetchWordTypes)
+    }
+  });
+  // ['bing', 'youdao', 'collins', 'jinshan', 'longman', 'cambridge', 'webster', 'oxford', 'vocabulary', 'wordreference', 'haici']
+  let selectWordTypeGroup: DictType[] = selectWordTypes
 
   const requests = selectWordTypeGroup.map(type => {
     return getSingleWordByType(word, type, port, data.data.cacheOrigin)
