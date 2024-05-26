@@ -12,6 +12,11 @@ window.addEventListener("message", async function (ev) {
     // console.log(tab, 'tab')
     reqOpenTab(ev.data)
   }
+
+  if (ev.data.type === 'req:get-select-dictTypes') {
+    reqStorage(ev.data)
+  }
+
 })
 
 async function reqOpenTab (data: { type: string, data: { type: string, url: any } }) {
@@ -25,17 +30,11 @@ async function reqOpenTab (data: { type: string, data: { type: string, url: any 
   });
 
   port.onMessage.addListener(function (msg) {
-    console.log(msg, 'port msg content scripts', Date.now())
-    if (msg.type === 'info:openTab') {
-      window.postMessage({
-        type: 'info:openTab',
-        data: msg.data
-      }, "*")
-    }
+    console.log(msg, '监听tab是否已经打开,从backgroundjs', Date.now())
   });
 }
 
-async function reqStorage (data: { type: string, data: { type: string, storage: any, word: string } }) {
+async function reqStorage (data: { type: string, data: { type: string, storage: any, storageKey: string, word: string } }) {
   console.log(data, '测试')
   if (data.data.type === 'set') {
     chrome.storage.local.set({[data.data.word]: JSON.stringify(data.data.storage)}).then(() => {
@@ -57,7 +56,16 @@ async function reqStorage (data: { type: string, data: { type: string, storage: 
       data: storageCache
     }, "*")
   }
-  
+
+  if (data.data.type === 'get-single') {
+    let storage = await getWordStorage(data.data.storageKey)
+    window.postMessage({
+      type: 'info:get-select-dictTypes',
+      data: {
+        storage
+      }
+    }, "*")
+  }
 }
 
 function reqWordDesc (data: { type: string, data: { word: string, cacheOrigin: CacheOrigin } }){
@@ -94,6 +102,26 @@ function reqWordDesc (data: { type: string, data: { word: string, cacheOrigin: C
       }
       console.log(msg, 'port disconnect content scripts', Date.now())
     })
+}
+
+async function getWordStorage(storageKey: string) {
+  let wordCache = null
+  const initStorageCache = chrome.storage.local.get(storageKey).then((items) => {
+    console.log(items, '查看是否有缓存')
+    
+    if (items[storageKey]) {
+      wordCache = items[storageKey]
+      return true
+    }
+  });
+
+  try {
+    await initStorageCache;
+  } catch (e) {
+    console.log(e)
+  }
+  console.log(storageKey, wordCache, '查看是否有缓存2')
+  return wordCache
 }
 
 // 发送一次性消息

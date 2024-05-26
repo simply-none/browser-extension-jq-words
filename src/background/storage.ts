@@ -28,19 +28,12 @@ function sendToEvent(port: chrome.runtime.Port, data: ReqData<{}>) {
   port.postMessage(data)
 }
 
-async function getWordStorage(type: string, word: string, port?: chrome.runtime.Port) {
+async function getWordStorage(type: string, word: string) {
   let wordCache: WordCache = {} as WordCache;
   let cacheKey = `${type}:${word}`
-  const initStorageCache = chrome.storage.sync.get(cacheKey).then((items) => {
-    if (port) {
-      console.log({
-        type: 'error',
-        data: {
-          msg: '获取缓存---请求前',
-          items: items,
-        }
-      })
-    }
+  const initStorageCache = chrome.storage.local.get(cacheKey).then((items) => {
+    console.log(items, '查看是否有缓存')
+    
     if (items[cacheKey]) {
       wordCache = items[cacheKey] as WordCache
       return true
@@ -63,6 +56,9 @@ async function setWordStorage(wordSymbol: string, value: WordCache) {
     [wordSymbol]: value
   }).then(value => {
     console.log(value, '设置成功否')
+    let w = wordSymbol.split(':')
+    console.log('获取获取')
+    getWordStorage(w[0], w[1])
   }).catch(e => {
     console.log('失败否', e)
   })

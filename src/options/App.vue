@@ -1,13 +1,21 @@
 <script setup lang="ts">
-import HelloWorld from '@/components/HelloWorld.vue'
+import { ref } from 'vue';
+
+const toggleUrl = ref('')
+
+const navToSetting = async () => {
+  const url = chrome.runtime.getURL(toggleUrl.value || 'src/popup/index.html?name=Home')
+  const tab = await chrome.tabs.create({ url: url })
+  console.log(tab, 'tab')
+}
+
 </script>
 
 <template>
   <div>
     <h1>options</h1>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+    <ElInput v-model="toggleUrl"/>
+    <el-button @click="navToSetting">跳转到设置页面</el-button>
   </div>
   <HelloWorld msg="Vite + Vue" />
 </template>
@@ -19,9 +27,11 @@ import HelloWorld from '@/components/HelloWorld.vue'
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.vue:hover {
   filter: drop-shadow(0 0 2em #42b883aa);
 }

@@ -2,15 +2,15 @@ import cheerio from "cheerio";
 
 // import { html } from "./data.js";
 
-import { readFileSync, writeFileSync } from "fs";
+// import { readFileSync, writeFileSync } from "fs";
 
-const html = readFileSync("data.js", "utf-8");
+// const html = readFileSync("data.js", "utf-8");
 
-async function getText() {
-  const link = $("head");
-  const text = await link.html();
-  console.log(text);
-}
+// async function getText() {
+//   const link = $("head");
+//   const text = await link.html();
+//   console.log(text);
+// }
 
 // async function insert(selectors) {
 //   let id = "browser-extension-jq-words";
@@ -133,8 +133,29 @@ async function elementToNewNode(newEle, oldEle, selector) {
 // const a = collins(html)
 // writeFileSync('./cheerio-test.html', a, 'utf-8')
 
-const a = cheerio.load(html)
+// const a = cheerio.load(html)
 
-a('#phrsListTab > div.trans-container > ul > li').each(function() {
-  console.log(a(this).text(), '测试')
-})
+// a('#phrsListTab > div.trans-container > ul > li').each(function() {
+//   console.log(a(this).text(), '测试')
+// })
+// const debounce= (func, delay) => {
+//   let timer = null;
+ 
+//   return function (a) {
+//     console.log(a)
+//     clearTimeout(timer); // 清除上一次的定时器
+//     timer = setTimeout(() => {
+//       // 设置新的定时器，延迟执行函数
+//       func.apply(this, arguments);
+//     }, delay);
+//   };
+// }
+
+// // 使用防抖函数
+// const debouncedFunction = debounce(myFunction, 1000);
+
+// debouncedFunction()
+
+let $ = cheerio.load('<div></div>')
+
+console.log($.html())

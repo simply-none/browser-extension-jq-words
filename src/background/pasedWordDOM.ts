@@ -28,13 +28,10 @@ function parsedWordDOM(word: string, type: DictType, html: string, cacheOrigin: 
     }
   }
 
-  $('#phrsListTab > div.trans-container > ul > li').each(function (this: any) {
-    console.log($(this).text(), '测试啊')
-  })
-
-
   // 存储单词信息
-  cacheWord(word, type, $, cacheOrigin)
+  // 克隆节点，防止由于后续的增删改查，改变节点的内容
+  const $clone = cheerio.load($.html())
+  cacheWord(word, type, $clone, cacheOrigin)
 
   let deleted = wordDOMProps[type].deleted
   if (deleted) {
@@ -52,6 +49,10 @@ function parsedWordDOM(word: string, type: DictType, html: string, cacheOrigin: 
     // }
     await elementToNewNode($new(`#${id}`), $, selector)
   })
+
+  $('head link').appendTo($new(`head`))
+  $('head script').appendTo($new(`head`))
+  $('head style').appendTo($new(`head`))
 
   let insertedStyle = wordDOMProps[type].insertedStyle
   if (insertedStyle) {
@@ -80,8 +81,6 @@ async function cacheWord(word: string, type: DictType, ele: any, cacheOrigin: Ca
   wordCache = await getWordStorage(type, word)
   console.log(wordCache, 'wordCache in cacheWord')
 
-  console.log(ele.html(), '测试啊111')
-
   // 仅当之前未存储，才将dom源存入
   if (!wordCache.word) {
     wordCache.word = word
@@ -89,19 +88,13 @@ async function cacheWord(word: string, type: DictType, ele: any, cacheOrigin: Ca
     wordCache.HTML = ele.html()
 
     Object.entries(wordDOMProps[type].cache).forEach(function ([item, selectorList]) {
-      console.log(ele, 'ele')
-      
-      const $ele = ele
       
       selectorList.forEach(function (sel) {
-        const $$ele = $ele
         
-        console.log($$ele, 'ele')
-        console.log(sel, type, item, $$ele(sel), $$ele(sel).length, 'sel格式')
         const parsedTextList: string[] = []
-        $$ele('body' || sel).each(function (this: any) {
-          console.log($$ele(this).text(), '测试')
-          const thisText = $$ele(this).text()
+        ele(sel).each(function (this: any) {
+          console.log(ele(this).text(), type, sel, item, 'text(), type, sel, item 测试')
+          const thisText = ele(this).text()
           thisText && parsedTextList.push(thisText);
         })
         // 声明类型，不然报错

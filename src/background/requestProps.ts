@@ -6,6 +6,38 @@ type RequestProps = {
 }
 
 const request: Record<DictType, RequestProps> = {
+  webster: {
+    url: `https://www.merriam-webster.com/dictionary/wordHolder`,
+    headers: {},
+  },
+  haici: {
+    url: `https://dict.cn/wordHolder`,
+    headers: {},
+  },
+  wordreference: {
+    url: `https://www.wordreference.com/enzh/wordHolder`,
+    headers: {},
+  },
+  vocabulary: {
+    url: `https://www.vocabulary.com/dictionary/wordHolder`,
+    headers: {},
+  },
+  oxford: {
+    url: `https://www.oxfordlearnersdictionaries.com/definition/english/wordHolder_1`,
+    headers: {},
+  },
+  longman: {
+    url: `https://www.ldoceonline.com/dictionary/wordHolder`,
+    headers: {},
+  },
+  cambridge: {
+    url: `https://dictionary.cambridge.org/dictionary/english-chinese-simplified/wordHolder`,
+    headers: {},
+  },
+  jinshan: {
+    url: `https://www.iciba.com/word?w=wordHolder`,
+    headers: {},
+  },
   youdao: {
     url: `http://youdao.com/w/wordHolder`,
     headers: {},

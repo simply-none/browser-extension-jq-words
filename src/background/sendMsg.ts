@@ -53,29 +53,35 @@ function listenMultiMsg(port: chrome.runtime.Port, data: ReqData<{ word: string,
     return true
   }
 
-  let selectWordTypeGroup: DictType[] = ['bing', 'youdao', 'collins']
+  let selectWordTypeGroup: DictType[] = ['bing', 'youdao', 'collins', 'jinshan', 'longman', 'cambridge', 'webster', 'oxford', 'vocabulary', 'wordreference', 'haici']
 
-  selectWordTypeGroup.forEach(async type => {
-    // 获取之前是否存储过该值，有就不请求网络
-    const wordCache:WordCache = await getWordStorage(type, word, port)
-    console.log(wordCache, 'wordCache')
-    if (wordCache.word) {
-      sendToEvent(port, {
-        type: 'info:word-desc',
-        data: {
-          text: wordCache.HTML,
-          type,
-          ...requestProps,
-          wordCache,
-        }
-      })
-      return true
-    }
+  const requests = selectWordTypeGroup.map(type => {
+    return getSingleWordByType(word, type, port, data.data.cacheOrigin)
+  })
 
-    fetchWordDOM(word, type, port, data.data.cacheOrigin)
+  Promise.all(requests).then(valarr => {
+    console.log(valarr, '请求的所有参数数组')
+  }).catch(e => {
+    console.log(e, '请求失败原因')
   })
   // 避免关闭请求连接的通道，可特定保持5s的长连接
   // keepLongConnection(port)
+}
+
+function getSingleWordByType (word: string, type: DictType, port: chrome.runtime.Port, cacheOrigin: CacheOrigin) {
+  return new Promise(async (res) => {
+      // 获取之前是否存储过该值，有就不请求网络
+      const wordCache:WordCache = await getWordStorage(type, word)
+      console.log(wordCache, 'wordCache')
+      if (wordCache.word) {
+        parsedAndSendDOM(wordCache.HTML, word, type, port, cacheOrigin)
+        return res(true)
+      }
+  
+      fetchWordDOM(word, type, port, cacheOrigin)
+      res(true)
+  })
+  
 }
 
 // utils----start
@@ -85,8 +91,12 @@ function fetchWordDOM(word: string, type: DictType, port: chrome.runtime.Port, c
   fetch(requestUrl, {
     headers: requestProps[type].headers
   }).then(async res => {
-
     const resText = await res.text()
+    parsedAndSendDOM(resText, word, type, port, cacheOrigin)
+  })
+}
+
+async function parsedAndSendDOM (resText: string, word: string, type: DictType, port: chrome.runtime.Port, cacheOrigin: CacheOrigin) {
 
     let $parsedWord = parsedWordDOM(word, type, resText, cacheOrigin)
 
@@ -103,7 +113,6 @@ function fetchWordDOM(word: string, type: DictType, port: chrome.runtime.Port, c
         ...requestProps,
       }
     })
-  })
 }
 
 // 保持扩展插件各个通道连接不关闭

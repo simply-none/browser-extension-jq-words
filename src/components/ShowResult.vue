@@ -26,7 +26,10 @@
           <div class="jade-dialog__title">{{ item.name }}</div>
         </template>
         <div v-if="item.data.length > 0" class="jade-dialog__content">
-          <div :style="{ height: computedHeight(key) }" v-html="item.data" class="jade-dialog__content-body"></div>
+          <div :style="{ height: computedHeight(key) }" class="jade-dialog__content-body">
+            <WordFrame :data="item.data"/>
+          </div>
+          <!-- <div :style="{ height: computedHeight(key) }" v-html="item.data" class="jade-dialog__content-body"></div> -->
           <div class="jade-dialog__content-expand" @click="setContentHeight(expandItems[key])">
             <template v-if="expandItems[key].expand">
               <el-icon>
@@ -52,6 +55,7 @@
 
 <script lang="ts" setup>
 import { onMounted, ref, onBeforeUnmount, computed, watch } from 'vue'
+import WordFrame from './WordFrame.vue';
 import {
   Star,
   PieChart,
@@ -74,14 +78,12 @@ const props = defineProps<{
   dialogTableVisible: boolean,
   data: object,
   info: { title: string },
-  wordList: {
-    [key: string]: {
+  wordList: Record<DictType, {
       type: string,
       data: string,
       name: string,
       expand: boolean
-    }
-  }
+  }>
 }>()
 
 const emit = defineEmits(['closeDialog', 'getWords', 'topHandle'])
@@ -112,7 +114,7 @@ const expandPanel = computed({
 
 const expandItems = computed(() => props.wordList)
 
-let computedHeight = computed(() => (key: string | number) => {
+let computedHeight = computed(() => (key: DictType) => {
   if (expandItems.value[key].expand) return 'auto'
   if (expandItems.value[key].data === '') return 'auto'
   return '256px'
