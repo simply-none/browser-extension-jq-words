@@ -31,9 +31,9 @@ const changeCancel = () => {
   showChangeTypesBtn.value = false
 }
 
-const changeWordTypes = () => {
+const changeWordTypes = (): void => {
   const data = {
-    type: 'req:storage',
+    type: 'req:popup2main-storage',
     data: {
       type: 'set',
       word: 'setting:selectedWordTypes',
@@ -41,7 +41,39 @@ const changeWordTypes = () => {
     }
   }
   console.log(data, 'data')
-  window.postMessage(data, "*")
+  popupConnectToBackgroundScript(data)
+  // popupConnectToContentScript(data)
+}
+
+// 直接向background发送消息
+const popupConnectToBackgroundScript = (data: any) => {
+  const port = chrome.runtime.connect({ name: 'req:word-desc--' + data.data.word });
+
+  port.postMessage(data);
+
+  port.onMessage.addListener(function (msg) {
+    console.log(msg, '监听数据在settings insex---runtme')
+  });
+}
+
+// 该方法仅在点击扩展程序图标时，才会向content-script发送消息
+// 单独打开的chrome-extends：页面上，不会触发该方法，显示：runtime.lastError: Could not establish connection. Receiving end does not exist.
+// TODO: 所以在任何时候，有一种方法，能行得通，就可以先用着，后续可以再次优化
+// 不然在这里一直浪费时间，肯定是不行的，毕竟这是chrome-extends的特性，不因使用者而改变
+const popupConnectToContentScript = async (data: any) => {
+
+  let queryOptions = { active: true, lastFocusedWindow: true };
+  // `tab` will either be a `tabs.Tab` instance or `undefined`.
+  let [tab] = await chrome.tabs.query(queryOptions);
+
+  const port = chrome.tabs.connect(tab.id!)
+  console.log(port, 'prot')
+
+  port.postMessage(data);
+
+  port.onMessage.addListener(function (msg) {
+    console.log(msg, '监听数据在settings insex---tabs')
+  });
 }
 
 type ReqDataType = {
@@ -55,6 +87,7 @@ const getMessage = (ev: { data: ReqData<ReqDataType> }) => {
   if (!ev.data.type) {
     return false
   }
+  console.log(ev, 'settting index getmessage')
 
   if (ev.data.type === 'info:get-select-dictTypes') {
     console.log(ev.data, 'info:get-select-dictTypes')

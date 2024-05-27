@@ -12,7 +12,7 @@
 
 <script lang="ts" setup>
 import OpenNewWindow from './about/openNewWindow.vue';
-import htmlstr from './cheerio-test.html?raw'
+// import htmlstr from './cheerio-test.html?raw'
 import { onMounted, ref, nextTick } from 'vue';
 
 const height = ref('0')
@@ -41,7 +41,7 @@ const setHeight = () => {
   console.log(height.value)
 }
 
-const srcdoc = ref(htmlstr)
+const srcdoc = ref('htmlstr')
 
 </script>
 

@@ -100,6 +100,7 @@ let table = ref<WordCache[]>([])
 onMounted(async () => {
   await chrome.storage.local.get().then((items) => {
     Object.keys(items).forEach((key) => {
+      delete items[key].HTML
       table.value.push({
         wordType: key,
         ...items[key]

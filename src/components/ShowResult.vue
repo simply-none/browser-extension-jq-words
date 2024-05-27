@@ -30,8 +30,8 @@
             <WordFrame :data="item.data"/>
           </div>
           <!-- <div :style="{ height: computedHeight(key) }" v-html="item.data" class="jade-dialog__content-body"></div> -->
-          <div class="jade-dialog__content-expand" @click="setContentHeight(expandItems[key])">
-            <template v-if="expandItems[key].expand">
+          <div class="jade-dialog__content-expand" @click="setContentHeight(expandItems[key]!)">
+            <template v-if="expandItems[key]!.expand">
               <el-icon>
                 <ArrowUp />
               </el-icon>
@@ -78,12 +78,12 @@ const props = defineProps<{
   dialogTableVisible: boolean,
   data: object,
   info: { title: string },
-  wordList: Record<DictType, {
+  wordList: Partial<Record<DictType, {
       type: string,
       data: string,
       name: string,
       expand: boolean
-  }>
+  }>>
 }>()
 
 const computedWordList: Record<DictType, {
@@ -153,8 +153,8 @@ const expandPanel = computed({
 const expandItems = computed(() => props.wordList)
 
 let computedHeight = computed(() => (key: DictType) => {
-  if (expandItems.value[key].expand) return 'auto'
-  if (expandItems.value[key].data === '') return 'auto'
+  if (expandItems.value[key]!.expand) return 'auto'
+  if (expandItems.value[key]!.data === '') return 'auto'
   return '256px'
 })
 

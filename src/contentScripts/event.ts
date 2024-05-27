@@ -1,5 +1,6 @@
 
 window.addEventListener("message", async function (ev) {
+  console.log(ev, '监听事件')
   if (ev.data.type === 'req:word-desc') {
     reqWordDesc(ev.data)
   }
@@ -19,8 +20,8 @@ window.addEventListener("message", async function (ev) {
 
 })
 
-async function reqOpenTab (data: { type: string, data: { type: string, url: any } }) {
-  const port = chrome.runtime.connect({ name: 'req:openTab--'+ data.data.url });
+async function reqOpenTab(data: { type: string, data: { type: string, url: any } }) {
+  const port = chrome.runtime.connect({ name: 'req:openTab--' + data.data.url });
 
   port.postMessage({
     type: 'req:openTab',
@@ -34,10 +35,10 @@ async function reqOpenTab (data: { type: string, data: { type: string, url: any 
   });
 }
 
-async function reqStorage (data: { type: string, data: { type: string, storage: any, storageKey: string, word: string } }) {
+async function reqStorage(data: { type: string, data: { type: string, storage: any, storageKey: string, word: string } }) {
   console.log(data, '测试')
   if (data.data.type === 'set') {
-    chrome.storage.local.set({[data.data.word]: JSON.stringify(data.data.storage)}).then(() => {
+    chrome.storage.local.set({ [data.data.word]: JSON.stringify(data.data.storage) }).then(() => {
       console.log("Value is set");
     });
   }
@@ -68,47 +69,47 @@ async function reqStorage (data: { type: string, data: { type: string, storage: 
   }
 }
 
-function reqWordDesc (data: { type: string, data: { word: string, cacheOrigin: CacheOrigin } }){
-    console.log(data, '测试')
+function reqWordDesc(data: { type: string, data: { word: string, cacheOrigin: CacheOrigin } }) {
+  console.log(data, '测试')
 
-    const port = chrome.runtime.connect({ name: 'req:word-desc--'+ data.data.word });
+  const port = chrome.runtime.connect({ name: 'req:word-desc--' + data.data.word });
 
-    port.postMessage({
-      type: 'req:word-desc',
-      data: {
-        word: data.data.word,
-        cacheOrigin: data.data.cacheOrigin
-      }
-    });
+  port.postMessage({
+    type: 'req:word-desc',
+    data: {
+      word: data.data.word,
+      cacheOrigin: data.data.cacheOrigin
+    }
+  });
 
-    port.onMessage.addListener(function (msg) {
-      console.log(msg, 'port msg content scripts', Date.now())
-      if (msg.type === 'info:word-desc') {
-        window.postMessage({
-          type: 'info:word-desc',
-          data: msg.data
-        }, "*")
-      }
-    });
-    
-    port.onDisconnect.addListener(function (msg) {
-      if (msg.name === 'req:word-desc--'+ data.data.word) {
-        window.postMessage({
-          type: 'info:word-desc',
-          data: {
-            status: 'close'
-          }
-        }, "*")
-      }
-      console.log(msg, 'port disconnect content scripts', Date.now())
-    })
+  port.onMessage.addListener(function (msg) {
+    console.log(msg, 'port msg content scripts', Date.now())
+    if (msg.type === 'info:word-desc') {
+      window.postMessage({
+        type: 'info:word-desc',
+        data: msg.data
+      }, "*")
+    }
+  });
+
+  port.onDisconnect.addListener(function (msg) {
+    if (msg.name === 'req:word-desc--' + data.data.word) {
+      window.postMessage({
+        type: 'info:word-desc',
+        data: {
+          status: 'close'
+        }
+      }, "*")
+    }
+    console.log(msg, 'port disconnect content scripts', Date.now())
+  })
 }
 
 async function getWordStorage(storageKey: string) {
   let wordCache = null
   const initStorageCache = chrome.storage.local.get(storageKey).then((items) => {
     console.log(items, '查看是否有缓存')
-    
+
     if (items[storageKey]) {
       wordCache = items[storageKey]
       return true
@@ -123,6 +124,13 @@ async function getWordStorage(storageKey: string) {
   console.log(storageKey, wordCache, '查看是否有缓存2')
   return wordCache
 }
+
+// 监听到消息
+chrome.runtime.onConnect.addListener(function (port) {
+  port.onMessage.addListener(async function (msg: ReqData<{ word: string, url: string, cacheOrigin: CacheOrigin }>) {
+    console.log('侦听 in main', msg)
+  });
+});
 
 // 发送一次性消息
 // chrome.runtime.sendMessage({

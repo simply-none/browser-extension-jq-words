@@ -490,6 +490,7 @@ const haici: WordDOMProps = {
     '.dict-chart',
     '#dshared',
     '.copyright'
+    '.section.def > h2'
   ],
   selected: [
     '#content .main',

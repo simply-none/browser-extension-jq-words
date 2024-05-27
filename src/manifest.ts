@@ -13,6 +13,8 @@ const manifest: chrome.runtime.Manifest = {
     "webRequest",
     "contextMenus", // 右键菜单
 		"tabs", // 标签
+    "activeTab",
+    "scripting",
 		"notifications", // 通知
 		"webRequest", // web请求
 		"webRequestBlocking",

@@ -1,9 +1,10 @@
-import { 
+import {
   listenMultiMsg,
 } from './sendMsg'
 
-import { 
+import {
   listenStorageReq,
+  setWordStorage,
 } from './storage'
 
 import type {
@@ -17,8 +18,20 @@ chrome.runtime.onInstalled.addListener(async () => {
   // console.log(`Created tab ${tab.id}`)
 })
 
+
+
 chrome.runtime.onConnect.addListener(function (port) {
-  port.onMessage.addListener(async function (msg: ReqData<{ word: string, url: string, cacheOrigin: CacheOrigin }>) {
+  port.onMessage.addListener(async function (msg: ReqData<{ word: string, url: string, cacheOrigin: CacheOrigin, storage: any }>) {
+    console.log('侦听 in main', msg)
+    if (msg.type === 'req:popup2main-storage') {
+      chrome.storage.local.set({
+        [msg.data.word]: JSON.stringify(msg.data.storage)
+      }).then(value => {
+        console.log(value, '设置成功否')
+      }).catch(e => {
+        console.log('失败否', e)
+      })
+    }
     if (msg.type === 'req:word-desc') {
       listenMultiMsg(port, msg)
     }

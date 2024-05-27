@@ -9,7 +9,7 @@
     "types": ["element-plus/global", "@types/chrome", "@types/node", "@types/cheerio", "./src/types"],
     "baseUrl": "./",
     "paths": {
-      "@/*": ["./src/"]
+      "@/*": ["src/*"]
     },
 
     /* Bundler mode */

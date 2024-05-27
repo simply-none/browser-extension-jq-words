@@ -40,6 +40,34 @@ expandItems[type]
 expandItems.value[type]
 ```
 
+**Error: [vite]: Rollup failed to resolve import "src/utils/common" from "C:/Users/admin/Documents/GitHub/xy-dict/src/components/TestPopup.vue?vue&type=script&setup=true&lang.ts".      This is most likely unintended because it can break your application at runtime.**
+
+问题排查：代码使用自动生成工具生成了错误的导入路径，在后续操作时，应该时刻排查由于代码改动造成的莫名的错误，毕竟之前就能够运行不报错的，不是吗？哈哈哈
+
+**vscode编辑器报错：Cannot find module '@/utils/common' or its corresponding type declarations.ts-plugin(2307)，但是代码运行不报错**：
+
+1: 这个可能是vscode插件导致的，卸载掉相关的插件即可，或者卸载重装
+2： 可能是配置出错，拿这个来说：
+
+```json
+{
+  baseUrl: './',
+  paths: {
+    // 这个仅仅代表./src，若想包含后续子路径，必须加*
+    '@/': ['./src'],
+    // 包含所有子路径的导入
+    '@/*': ['./src/*'],
+    // 或者是，因为是相对于baseUrl的
+    '@/*': ['src/*']
+  }
+}
+```
+
+**明明在项目根目录配置了tsconfig、jsconfig，点击导入代码时就是不进行相关的跳转**：
+
+1：vscode中ts/js插件未初始化完毕
+2：配置出错，同上
+
 ### 性能优化
 
 **打包体积优化**：
