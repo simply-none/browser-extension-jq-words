@@ -50,8 +50,8 @@ function parsedWordDOM(word: string, type: DictType, html: string, cacheOrigin: 
     await elementToNewNode($new(`#${id}`), $, selector)
   })
 
-  $('head link').appendTo($new(`head`))
-  $('head script').appendTo($new(`head`))
+  // $('head link').appendTo($new(`head`))
+  // $('head script').appendTo($new(`head`))
   $('head style').appendTo($new(`head`))
 
   let insertedStyle = wordDOMProps[type].insertedStyle

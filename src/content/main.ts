@@ -12,8 +12,7 @@ ElDialog.props.lockScroll.default = false
 
 let div = document.createElement('div')
 div.setAttribute('id', 'jade-custom')
-let firstChild = document.body.firstChild
-document.body.insertBefore(div, firstChild)
+document.body.appendChild(div)
 
 const app = createApp(App)
 

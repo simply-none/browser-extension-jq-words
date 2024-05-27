@@ -74,13 +74,14 @@ const youdao: WordDOMProps = {
     `,
   ],
   deleted: [
-    '#phrsListTab > :not(h2, div.trans-container, style)'
+    '#phrsListTab > :not(h2, div.trans-container, style)',
+    'script[src]',
   ],
   selected: [
     '#phrsListTab',
     '#authTrans',
     'body style',
-    'body script',
+    'script:not([src])',
   ],
   existSelector: '#phrsListTab',
   cache: {
@@ -168,11 +169,12 @@ const collins: WordDOMProps = {
     '#main_content .ex-info',
     '.ptr.hwd_sound.type-hwd_sound',
     '.copyright',
+    'script[src]',
   ],
   selected: [
     'body',
     'body style',
-    'body script',
+    'script:not([src])',
   ],
   existSelector: '.cB.cB-def.dictionary.biling',
   cache: {
@@ -226,12 +228,13 @@ const bing: WordDOMProps = {
     '#sentenceSeg .de_li > div.se_li1 > div.sen_li.b_regtxt',
     '#sentenceSeg .se_li .se_li1 > div.mm_div',
     '.b_pag.b_cards',
+    'script[src]',
   ],
   selected: [
     'div.contentPadding > div > div > div.lf_area',
     '#sentenceSeg > div.se_li',
     'body style',
-    'body script',
+    'script:not([src])',
   ],
   existSelector: '.rs_area.b_cards',
   cache: {
@@ -296,10 +299,11 @@ const longman: WordDOMProps = {
     `,
   ],
   deleted: [
+    'script[src]',
   ],
   selected: [
     '.entry_content',
-    'script',
+    'script:not([src])',
     'style'
   ],
   existSelector: '.dictionary',
@@ -324,10 +328,11 @@ const cambridge: WordDOMProps = {
     `,
   ],
   deleted: [
+    'script[src]',
   ],
   selected: [
     '.entry-body',
-    'script',
+    'script:not([src])',
     'style'
   ],
   existSelector: '.pos-body',
@@ -357,11 +362,12 @@ const webster: WordDOMProps = {
     '#more-from-mw',
     'h1 > span',
     '.videos',
-    '.section.citation'
+    '.section.citation',
+    'script[src]',
   ],
   selected: [
     '#left-content',
-    'script',
+    'script:not([src])',
     'style'
   ],
   existSelector: '.entry-word-section-container',
@@ -394,10 +400,11 @@ const oxford: WordDOMProps = {
     '.dictlink-g',
     '.parallax-container',
     '#ring-links-box',
+    'script[src]',
   ],
   selected: [
     '#main-container',
-    'script',
+    'script:not([src])',
     'style'
   ],
   existSelector: '.senses_multiple',
@@ -419,10 +426,11 @@ const vocabulary: WordDOMProps = {
     `,
   ],
   deleted: [
+    'script[src]',
   ],
   selected: [
     '.definition-columns > .col-1',
-    'script',
+    'script:not([src])',
     'style'
   ],
   existSelector: '.word-area',
@@ -456,11 +464,12 @@ const wordreference: WordDOMProps = {
     '#FTintro',
     '#FTintro + .FTsource',
     '#FTintro + .FTsource + .FTlist',
-    '#postArticle'
+    '#postArticle',
+    'script[src]',
   ],
   selected: [
     '#centercolumn',
-    'script',
+    'script:not([src])',
     'style'
   ],
   existSelector: '#articleWRD',
@@ -489,12 +498,13 @@ const haici: WordDOMProps = {
   deleted: [
     '.dict-chart',
     '#dshared',
-    '.copyright'
-    '.section.def > h2'
+    '.copyright',
+    '.section.def > h2',
+    'script[src]',
   ],
   selected: [
     '#content .main',
-    'script',
+    'script:not([src])',
     'style'
   ],
   existSelector: '.def',

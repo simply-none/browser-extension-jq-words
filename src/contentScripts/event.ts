@@ -127,8 +127,17 @@ async function getWordStorage(storageKey: string) {
 
 // 监听到消息
 chrome.runtime.onConnect.addListener(function (port) {
-  port.onMessage.addListener(async function (msg: ReqData<{ word: string, url: string, cacheOrigin: CacheOrigin }>) {
+  port.onMessage.addListener(async function (msg: ReqData<{ storage: string, word: string, url: string, cacheOrigin: CacheOrigin }>) {
     console.log('侦听 in main', msg)
+
+    if (msg.type === 'info:get-select-dictTypes') {
+      window.postMessage({
+        type: 'info:get-select-dictTypes',
+        data: {
+          storage: msg.data.storage
+        }
+      }, "*")
+    }
   });
 });
 

@@ -18,7 +18,21 @@ chrome.runtime.onInstalled.addListener(async () => {
   // console.log(`Created tab ${tab.id}`)
 })
 
+const popupConnectToContentScript = async (data: any) => {
 
+  let queryOptions = { active: true, lastFocusedWindow: true };
+  // `tab` will either be a `tabs.Tab` instance or `undefined`.
+  let [tab] = await chrome.tabs.query(queryOptions);
+
+  const port = chrome.tabs.connect(tab.id!)
+  console.log(port, 'prot')
+
+  port.postMessage(data);
+
+  port.onMessage.addListener(function (msg) {
+    console.log(msg, '监听数据在settings insex---tabs')
+  });
+}
 
 chrome.runtime.onConnect.addListener(function (port) {
   port.onMessage.addListener(async function (msg: ReqData<{ word: string, url: string, cacheOrigin: CacheOrigin, storage: any }>) {
@@ -28,6 +42,12 @@ chrome.runtime.onConnect.addListener(function (port) {
         [msg.data.word]: JSON.stringify(msg.data.storage)
       }).then(value => {
         console.log(value, '设置成功否')
+        popupConnectToContentScript({
+          type: 'info:get-select-dictTypes',
+          data: {
+            storage: JSON.stringify(msg.data.storage)
+          }
+        })
       }).catch(e => {
         console.log('失败否', e)
       })

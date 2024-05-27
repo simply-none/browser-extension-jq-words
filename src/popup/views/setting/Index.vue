@@ -8,6 +8,7 @@
           {{ city }}
         </el-checkbox>
       </el-checkbox-group>
+      <div>选择的词典类型顺序：{{ selectWordTypes }}</div>
       <el-button v-if="showChangeTypesBtn" @click="changeWordTypes" type="primary">修改</el-button>
       <el-button v-if="showChangeTypesBtn" @click="changeCancel">取消</el-button>
     </div>

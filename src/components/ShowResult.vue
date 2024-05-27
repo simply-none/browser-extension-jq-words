@@ -93,11 +93,11 @@ const computedWordList: Record<DictType, {
       expand: boolean
   }> = computed(() => {
   const wl = JSON.parse(JSON.stringify(props.wordList))
-  Object.keys(wl).forEach((key) => {
-    if(!wl[key].data) {
-      delete wl[key]
-    }
-  })
+  // Object.keys(wl).forEach((key) => {
+  //   if(!wl[key].data) {
+  //     delete wl[key]
+  //   }
+  // })
   return wl
 }) as unknown as Record<DictType, {
       type: string,
@@ -207,13 +207,13 @@ onMounted(() => {
           padding: 0;
           border-radius: 0;
           box-shadow: none;
-          background: #904eef;
+          background: rgb(233 233 233);
 
           .el-input__inner {
             border: 0;
             border-radius: 0;
             padding-left: 6px;
-            color: #ffffff;
+            color: #5e00e1;
           }
         }
 
@@ -223,11 +223,11 @@ onMounted(() => {
           pointer-events: all;
           cursor: pointer;
           box-shadow: unset;
-          background: #5e00e1;
-          color: #ffffff;
+          background: rgb(233 233 233);
+          color: #5e00e1;
 
           &:hover {
-            background-color: #844ad5;
+            background-color: #cacaca;
           }
         }
 
@@ -270,9 +270,9 @@ onMounted(() => {
       margin: 15% auto 0;
       overflow: auto;
       background: white;
-      box-shadow: rgb(129 45 247) 0px 0px 6px;
+      box-shadow: rgb(229 229 229) 0px 0px 6px;
       z-index: 10000000;
-      border: 2px solid rgb(106 0 255);
+      border: 2px solid rgb(224 224 224);
     }
 
     &__title {
@@ -288,6 +288,7 @@ onMounted(() => {
 
       &-body {
         overflow: auto;
+        scrollbar-width: none;
 
         &::-webkit-scrollbar {
           display: none;
@@ -310,7 +311,7 @@ onMounted(() => {
 
     .el-dialog__header {
       padding: 1px 6px 3px 0;
-      background: #5e00e1;
+      // background: #5e00e1;
       width: 100%;
       box-sizing: border-box;
     }
