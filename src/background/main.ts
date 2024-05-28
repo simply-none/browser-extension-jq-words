@@ -37,6 +37,32 @@ const popupConnectToContentScript = async (data: any) => {
 chrome.runtime.onConnect.addListener(function (port) {
   port.onMessage.addListener(async function (msg: ReqData<{ word: string, url: string, cacheOrigin: CacheOrigin, storage: any }>) {
     console.log('侦听 in main', msg)
+    if (msg.type === 'req:popup2main-get-storage') {
+
+      await chrome.storage.local.get(msg.data.storage)
+
+      let selectWordTypes: DictType[] = []
+      const initStorageCache = chrome.storage.local.get().then(items => {
+        const fetchWordTypes = items[msg.data.storage]
+        if (fetchWordTypes) {
+          selectWordTypes = JSON.parse(fetchWordTypes)
+        }
+      })
+      try {
+        await initStorageCache
+        console.log(selectWordTypes, '获取成功否')
+        port.postMessage({
+          type: 'info:get-select-dictTypes',
+          data: {
+            data: {
+              storage: JSON.stringify(selectWordTypes)
+            }
+          }
+        })
+      } catch (error) {
+        console.log(error, '获取错误')
+      }
+    }
     if (msg.type === 'req:popup2main-storage') {
       chrome.storage.local.set({
         [msg.data.word]: JSON.stringify(msg.data.storage)
@@ -45,6 +71,7 @@ chrome.runtime.onConnect.addListener(function (port) {
         popupConnectToContentScript({
           type: 'info:get-select-dictTypes',
           data: {
+            type: 'info:get-select-dictTypes',
             storage: JSON.stringify(msg.data.storage)
           }
         })

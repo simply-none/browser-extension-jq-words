@@ -5,6 +5,15 @@ const manifest: chrome.runtime.Manifest = {
   name: pkg.name,
   version: pkg.version,
   description: pkg.description,
+  icons: {
+    // 仅能使用相对于public下的资源
+    16: "assets/app/icon-16.png",
+    32: "assets/app/icon-32.png",
+    48: "assets/app/icon-48.png",
+    64: "assets/app/icon-64.png",
+    128: "assets/app/icon-128.png",
+    256: "assets/app/icon-256.png",
+  },
   content_security_policy: {
     "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
   },

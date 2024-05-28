@@ -17,9 +17,9 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, watch, unref, toRaw, toValue } from 'vue'
+import { onMounted, ref, watch, unref, toRaw, toValue, onUnmounted } from 'vue'
 
-const selectWordTypes = ref(['bing', 'youdao', 'longman'])
+const selectWordTypes = ref(['bing'])
 const wordTypes: DictType[] = ['bing', 'youdao', 'collins', 'jinshan', 'longman', 'cambridge', 'webster', 'oxford', 'vocabulary', 'wordreference', 'haici']
 
 const showChangeTypesBtn = ref(false)
@@ -46,15 +46,33 @@ const changeWordTypes = (): void => {
   // popupConnectToContentScript(data)
 }
 
+const getMessage = (ev: { data: ReqData<ReqDataType> }) => {
+  console.log(ev, 'getmessage')
+  if (!ev.data.type) {
+    return false
+  }
+  console.log(ev, 'settting index getmessage')
+
+  if (ev.data.type === 'info:get-select-dictTypes') {
+    console.log(ev.data, 'info:get-select-dictTypes', '获取获取')
+    let storage = ev.data.data.storage
+    if (!storage) {
+      changeWordTypes()
+    } else {
+      console.log(storage, 'storage', JSON.parse(storage))
+      selectWordTypes.value = JSON.parse(storage)
+    }
+  }
+
+}
+
 // 直接向background发送消息
 const popupConnectToBackgroundScript = (data: any) => {
   const port = chrome.runtime.connect({ name: 'req:word-desc--' + data.data.word });
 
   port.postMessage(data);
 
-  port.onMessage.addListener(function (msg) {
-    console.log(msg, '监听数据在settings insex---runtme')
-  });
+  port.onMessage.addListener(getMessage);
 }
 
 // 该方法仅在点击扩展程序图标时，才会向content-script发送消息
@@ -84,33 +102,24 @@ type ReqDataType = {
   storage: string;
 }
 
-const getMessage = (ev: { data: ReqData<ReqDataType> }) => {
-  if (!ev.data.type) {
-    return false
+popupConnectToBackgroundScript({
+  type: 'req:popup2main-get-storage',
+  data: {
+    type: 'get-single',
+    word: 'setting:selectedWordTypes',
+    storage: 'setting:selectedWordTypes',
   }
-  console.log(ev, 'settting index getmessage')
+})
 
-  if (ev.data.type === 'info:get-select-dictTypes') {
-    console.log(ev.data, 'info:get-select-dictTypes')
-    let storage = ev.data.data.storage
-    if (!storage) {
-      changeWordTypes()
-    } else {
-      selectWordTypes.value = JSON.parse(storage)
-    }
-  }
 
-}
 
 onMounted(() => {
-  window.postMessage({
-    type: 'req:storage',
-    data: {
-      type: 'get-single',
-      storageKey: 'setting:selectedWordTypes',
-    }
-  }, "*")
+
   addEventListener("message", getMessage)
+})
+
+onUnmounted(() => {
+  removeEventListener("message", getMessage)
 })
 
 

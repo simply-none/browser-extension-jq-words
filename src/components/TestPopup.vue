@@ -1,12 +1,20 @@
 <template>
   <div id="test-popup">
-    <ShowResult :dialogTableVisible="dialogTableVisible" :wordList="selectedWordList" :data="data" :info="info"
-      @closeDialog="dialogTableVisible = false" @getWords="debouncedFunction" @topHandle="topHandle" />
+    <SearchResult :position="position" :wordList="selectedWordList" :info="info" @getWords="debouncedFunction" @topHandle="topHandle" />
+    <JadeIconDialog :visible="iconDialogVisible" :position="position">
+      <template #content>
+        <div @mouseover="mouseOverFn" @mouseleave="mouseLeaveFn" style="width: 100%;height: 100%;">
+          <IconDialogSvg/>
+        </div>
+      </template>
+    </JadeIconDialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import ShowResult from "@/components/ShowResult.vue";
+import SearchResult from "@/components/SearchResult.vue";
+import JadeIconDialog from '@/components/JadeIconDialog.vue'
+import IconDialogSvg from '@/components/IconDialogSvg.vue'
 import { debounce } from "@/utils/common";
 
 import {
@@ -20,12 +28,42 @@ import {
 } from "vue";
 
 import type { Ref } from "vue";
+
+import { useContentStore } from '@/stores/content'
+import { storeToRefs } from 'pinia';
+
+const contentStore = useContentStore()
+const { showSearchDialog, showIconDialog } = contentStore
+const { iconDialogVisible, searchDialogVisible } = storeToRefs(contentStore)
+
+let timer: Ref<NodeJS.Timeout | string | number | undefined> = ref(undefined);
+
+const mouseOverFn = (e: MouseEvent) => {
+  console.log(e, '鼠标hoverr')
+  clearTimeout(timer.value)
+  timer.value = setTimeout(() => {
+    showSearchDialog(true)
+    showIconDialog(false)
+    console.log('打开弹窗')
+  }, 300)
+}
+
+const mouseLeaveFn = (e: MouseEvent) => {
+  console.log(e, '鼠标离开')
+  clearTimeout(timer.value)
+}
+
 defineProps<{ msg: string }>();
 
 let data = ref();
 let info = ref({
   title: "",
 });
+
+let position = ref({
+  top: 0,
+  left: 0
+})
 
 interface WordItem {
   type: string;
@@ -59,96 +97,7 @@ const initWordListFn = (): Record<DictType, WordItem> => {
     return prev
   }, {} as Record<DictType, WordItem>);
 };
-// {
-//   collins: {
-//     type: "collins",
-//     name: "collins词典",
-//     data: "",
-//     phonetic: "",
-//     translate: "",
-//     expand: false,
-//   },
-//   youdao: {
-//     type: "youdao",
-//     name: "有道词典",
-//     data: "",
-//     phonetic: "",
-//     translate: "",
-//     expand: false,
-//   },
-//   bing: {
-//     type: "bing",
-//     name: "必应词典",
-//     phonetic: "",
-//     translate: "",
-//     data: "",
-//     expand: false,
-//   },
-//   jinshan: {
-//     type: "jinshan",
-//     name: "金山词霸",
-//     data: "",
-//     phonetic: "",
-//     translate: "",
-//     expand: false,
-//   },
-//   longman: {
-//     type: "longman",
-//     name: "朗文词典",
-//     data: "",
-//     phonetic: "",
-//     translate: "",
-//     expand: false,
-//   },
-//   cambridge: {
-//     type: "cambridge",
-//     name: "剑桥词典",
-//     data: "",
-//     phonetic: "",
-//     translate: "",
-//     expand: false,
-//   },
-//   webster: {
-//     type: "webster",
-//     name: "韦伯词典",
-//     data: "",
-//     phonetic: "",
-//     translate: "",
-//     expand: false,
-//   },
-//   haici: {
-//     type: "haici",
-//     name: "海词词典",
-//     data: "",
-//     phonetic: "",
-//     translate: "",
-//     expand: false,
-//   },
-//   wordreference: {
-//     type: "wordreference",
-//     name: "wordreference词典",
-//     data: "",
-//     phonetic: "",
-//     translate: "",
-//     expand: false,
-//   },
-//   vocabulary: {
-//     type: "vocabulary",
-//     name: "vocabulary词典",
-//     data: "",
-//     phonetic: "",
-//     translate: "",
-//     expand: false,
-//   },
-//   oxford: {
-//     type: "oxford",
-//     name: "牛津词典",
-//     data: "",
-//     phonetic: "",
-//     translate: "",
-//     expand: false,
-//   },
-// }
+
 let wordList: Record<DictType, WordItem> = reactive(initWordListFn());
 
 let selectedWordTypes: Ref<DictType[]> = ref([]);
@@ -168,8 +117,6 @@ watch(
     deep: true,
   }
 );
-
-let dialogTableVisible = ref(false);
 
 const topHandle = (type: string) => {
   if (type === "storage") {
@@ -204,7 +151,6 @@ const getWords = (word: string, cacheOrigin?: CacheOrigin) => {
     return false;
   }
   if (isWord) {
-    dialogTableVisible.value = true;
 
     info.value = {
       title: word,
@@ -238,11 +184,35 @@ const getData = (e: MouseEvent) => {
 
   selectionText.value = originText || "";
 
-  debouncedFunction(originText.trim(), {
-    date: formatDate(new Date()),
-    href: location.href,
-    example: (e.target as unknown as HTMLElement).innerText,
-  });
+  let word = originText.trim();
+
+  console.log(word, selection, "selected text");
+  let isWord = /^[a-z]+[\-\']?[a-z]*$/i.test(word);
+  if (word.length > 30) {
+    // 查词字数不可超过20
+    return false;
+  }
+  if (isWord) {
+    position.value = {
+      top: e.clientY,
+      left: e.clientX
+    }
+    // 打开弹窗
+    // showSearchDialog(true)
+
+    // 判断是否已经打开了查询单词的窗口，如果打开了，则：
+    // icon弹窗不展示，否则先关闭，再展示
+    if (!searchDialogVisible.value) {
+      showIconDialog(false)
+      showIconDialog(true)
+    }
+
+    debouncedFunction(word, {
+      date: formatDate(new Date()),
+      href: location.href,
+      example: (e.target as unknown as HTMLElement).innerText,
+    });
+  }
 };
 
 const formatDate = (dat: Date) => {
@@ -316,9 +286,19 @@ const getWordDesc = (ev: { data: ReqData<ReqDataType> }) => {
   }
 };
 
+// 当选择的内容没了时，关闭icon弹窗
+const listenerMouseClick = () => {
+  const selection = window.getSelection();
+  const selText = selection?.toString();
+  if (!selText) {
+    showIconDialog(false)
+  }
+}
+
 onBeforeUnmount(() => {
   removeEventListener("mouseup", getData);
   removeEventListener("message", getWordDesc);
+  removeEventListener('click', listenerMouseClick)
 });
 
 onMounted(() => {
@@ -334,6 +314,7 @@ onMounted(() => {
   );
   addEventListener("mouseup", getData);
   addEventListener("message", getWordDesc);
+  addEventListener('click', listenerMouseClick)
 });
 </script>
 

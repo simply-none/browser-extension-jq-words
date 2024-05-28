@@ -1,8 +1,8 @@
 {
-  "name": "vite-project",
-  "description": "A Vite project",
+  "name": "webkit-extension-jq-words",
+  "description": "浏览器查词、记忆插件",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -15,6 +15,7 @@
   "dependencies": {
     "cheerio": "^1.0.0-rc.12",
     "element-plus": "^2.7.3",
+    "pinia": "^2.1.7",
     "vue": "^3.4.21",
     "vue-router": "^4.3.2"
   },

@@ -95,9 +95,129 @@ const saveFile = (data: object) => {
   URL.revokeObjectURL(url);
 }
 
-let table = ref<WordCache[]>([])
+const mockTable = {
+  "cambridge:function": {
+    "origin": [
+      {
+        "date": "2024-05-28 16:39:43",
+        "example": "Call this function to set up a connection between the extension's background scripts (or other privileged scripts, such as popup scripts or options page scripts) and any content scripts that belong to this extension and are running in the specified tab. This function returns a runtime.Port object.",
+        "href": "https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/Tabs/connect"
+      }
+    ],
+    "phonetic": [
+      "uk                    \n    \n        \n            Your browser doesn't support HTML5 audio\n        \n        \n        \n    \n    \n/ˈfʌŋk.ʃən/",
+      "us                    \n    \n        \n            Your browser doesn't support HTML5 audio\n        \n        \n        \n    \n    \n/ˈfʌŋk.ʃən/",
+      "uk                    \n    \n        \n            Your browser doesn't support HTML5 audio\n        \n        \n        \n    \n    \n/ˈfʌŋk.ʃən/",
+      "us                    \n    \n        \n            Your browser doesn't support HTML5 audio\n        \n        \n        \n    \n    \n/ˈfʌŋk.ʃən/"
+    ],
+    "trans": [
+      "功能，用途；职责",
+      "典礼，仪式;社交聚会",
+      "工作；运行",
+      "（电脑程序中的）功能",
+      "（数学中的）函数，应变量",
+      "运转；工作；起作用"
+    ],
+    "word": "function"
+  },
+  "setting:selectedWordTypes": "[\"wordreference\",\"cambridge\"]",
+  "wordreference:function": {
+    "morph": [],
+    "origin": [
+      {
+        "date": "2024-05-28 16:39:43",
+        "example": "Call this function to set up a connection between the extension's background scripts (or other privileged scripts, such as popup scripts or options page scripts) and any content scripts that belong to this extension and are running in the specified tab. This function returns a runtime.Port object.",
+        "href": "https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/Tabs/connect"
+      }
+    ],
+    "phonetic": [
+      "UK:*UK and possibly other pronunciationsUK and possibly other pronunciations/ˈfʌŋkʃən/US:USA pronunciation: IPA and respellingUSA pronunciation: IPA/ˈfʌŋkʃən/ ,USA pronunciation: respelling(fungk′shən)"
+    ],
+    "trans": [
+      "中文",
+      "SCSimplified Chinese 运行 yùn xíng  TCTraditional Chinese 運行",
+      "SCSimplified Chinese 运转 yùn xíng ，yùn zhuàn  TCTraditional Chinese 運轉",
+      "SCSimplified Chinese 工作 yùn xíng ，gōng zuò  TCTraditional Chinese 工作",
+      "SCSimplified Chinese 起作用 qǐ zuò yòng ",
+      "SCSimplified Chinese 用作 qǐ zuò yòng，yòng zuò  ",
+      "SCSimplified Chinese 功能 gōng néng  TCTraditional Chinese 功能",
+      "SCSimplified Chinese 用途 gōng néng ，yòng tú TCTraditional Chinese 用途",
+      "SCSimplified Chinese 目的 gōng néng ，mù dì  TCTraditional Chinese 目的",
+      "中文",
+      "SCSimplified Chinese 官能 guān néng  ",
+      "SCSimplified Chinese （大脑等的）活动 guān néng ，dà nǎo děng de huó dòng ",
+      "SCSimplified Chinese 仪式 yí shì TCTraditional Chinese 儀式",
+      "SCSimplified Chinese 典礼 yí shì，diǎn lǐ TCTraditional Chinese 典禮",
+      "SCSimplified Chinese 职能 zhí néng  TCTraditional Chinese 職能",
+      "SCSimplified Chinese 职责 zhí néng ，zhí zé  TCTraditional Chinese 職責",
+      "SCSimplified Chinese 函数 hán shù TCTraditional Chinese 函數",
+      "SCSimplified Chinese 随…而变化的事物 suí ér biàn huà de shì wù ",
+      "中文",
+      "SCSimplified Chinese β函数 hán shù ",
+      "SCSimplified Chinese 身体功能  ",
+      "SCSimplified Chinese 身体机能  ",
+      "SCSimplified Chinese 起...的作用 qǐ de zuò yòng ",
+      "SCSimplified Chinese 功能键 gōng néng jiàn TCTraditional Chinese 功能鍵",
+      "SCSimplified Chinese 活动会议室  ",
+      "SCSimplified Chinese 宴会厅  "
+    ],
+    "word": "function"
+  },
+  "youdao:exchange": {
+    "morph": [
+      "[\n                    复数\n        exchanges\n                     第三人称单数\n        exchanges\n                     现在分词\n        exchanging\n                     过去式\n        exchanged\n                     过去分词\n        exchanged\n                   ]"
+    ],
+    "origin": [
+      {
+        "date": "2024-05-28 16:37:20",
+        "example": "When this is called, the runtime.onConnect event will be fired in any content script belonging to this extension that are running in the specified tab. The event listener will be passed another runtime.Port object. The two sides can then use the Port objects to exchange messages.",
+        "href": "https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/Tabs/connect"
+      }
+    ],
+    "phonetic": [
+      "英\n                                    [ɪksˈtʃeɪndʒ]\n                                                    \n                                ",
+      "美\n                                    [ɪksˈtʃeɪndʒ]\n                                                    \n                                "
+    ],
+    "trans": [
+      "n. 交换，互换；短暂的交谈，争吵；交战，交火；兑换，汇兑；交流，互访；交易所；（商品的）调换；电话局，电话交换台；换子，兑子",
+      "v. 调换，更换；交流，交谈；交换，互换；兑换，交易"
+    ],
+    "word": "exchange"
+  },
+  "youdao:extension": {
+    "morph": [
+      "[\n                    复数\n        extensions\n                   ]"
+    ],
+    "origin": [
+      {
+        "date": "2024-05-28 16:36:29",
+        "example": "Call this function to set up a connection between the extension's background scripts (or other privileged scripts, such as popup scripts or options page scripts) and any content scripts that belong to this extension and are running in the specified tab. This function returns a runtime.Port object.",
+        "href": "https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/Tabs/connect"
+      }
+    ],
+    "phonetic": [
+      "英\n                                    [ɪkˈstenʃ(ə)n]\n                                                    \n                                ",
+      "美\n                                    [ɪkˈstenʃ(ə)n]\n                                                    \n                                "
+    ],
+    "trans": [
+      "n. 延伸，扩展；展期，延长期；扩建部分，延伸部分；（电话）分机；扩展名；（为非全日制学生开设的）进修部；牵伸（术）；外延；广延（性）"
+    ],
+    "word": "extension"
+  }
+} as any as { [key: string]: WordCache };
+
+
+let table = ref<(WordCache & { wordType: string })[]>([])
 
 onMounted(async () => {
+  Object.keys(mockTable).forEach((key) => {
+      table.value.push({
+        wordType: key,
+        ...mockTable[key]
+      })
+    })
+
+    console.log(storageCache, "storageCache Value is set");
   await chrome.storage.local.get().then((items) => {
     Object.keys(items).forEach((key) => {
       delete items[key].HTML
@@ -114,6 +234,16 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
+
+:deep(.el-table) {
+  .el-table__row td.el-table__cell {
+    div {
+      box-sizing: border-box;
+      height: 36px;
+    }
+  }
+}
+
 .wordlist-item {
   padding: 3px;
   border: 1px solid grey;
