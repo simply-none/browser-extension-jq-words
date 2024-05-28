@@ -21,6 +21,21 @@
 
 ## 开发指导
 
+## API说明
+
+### 存储
+
+```typescript
+  // 对象形式的语法，只有存储有key，才会获取，其中这里的deploy指的是默认值，没有则返回这个值。。。
+  chrome.storage.local.get({
+    'youdao:nested': 'deploy'
+  }).then(res => {
+    console.log(res, 'get origin')
+  }).catch(e => {
+    console.log(e, '发生错误')
+  })
+```
+
 ## 开发指南
 
 **flex和inline-flex的区别**：
