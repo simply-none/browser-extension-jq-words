@@ -40,7 +40,7 @@ function parsedWordDOM(word: string, type: DictType, html: string, cacheOrigin: 
   if (deleted) {
     // 删掉所有的外链节点
     $('link').remove()
-    $('script').each(function(this: any) {
+    $('script').each(function (this: any) {
       const text = $(this).text()
       if (text.includes('https://') || text.includes('http://') || text.includes('iaw') || text.includes('sendGAEvent')) {
         // 删除所有包含外链的script
@@ -63,7 +63,7 @@ function parsedWordDOM(word: string, type: DictType, html: string, cacheOrigin: 
         $(this).attr(item, requestProps[type].host + itemAttr)
       }
       // src资源跨域，删除罢
-      if(item === 'src') {
+      if (item === 'src') {
         $(this).remove()
       }
     })
@@ -96,7 +96,7 @@ function parsedWordDOM(word: string, type: DictType, html: string, cacheOrigin: 
   // $('head script').appendTo($new(`head`))
   $('head style').appendTo($new(`head`))
 
-  
+
 
   console.log($new, '$new in parsedWordDOM end')
   return {
@@ -128,12 +128,38 @@ async function cacheWord(word: string, type: DictType, ele: any, cacheOrigin: Ca
 
       selectorList.forEach(function (sel) {
 
-        const parsedTextList: string[] = []
-        ele(sel).each(function (this: any) {
-          console.log(ele(this).text(), type, sel, item, 'text(), type, sel, item 测试')
-          const thisText = ele(this).text()
-          thisText && parsedTextList.push(thisText);
-        })
+        // 当字符串中有(*, **)星号时，进行切割
+        // sel: '.dpron-i*daud'(删除)
+        // *：剔除，**：挑选，***：多元素相加，****：表示处于某个元素下的内容进行其他*的操作, |: 表示多个类名
+        // 举例：Collins：.hom****.gramGrp.pos***.sense**gramGrp|subc**cit|type-translation
+        let parsedTextList = []
+
+        // TODO: 多元素相加有点难，后续处理
+        // let star3 = '***'
+        // let subParsedText = ''
+        // const is3Star = sel.includes(star3)
+        // sel.split(star3).forEach(subSel => {
+        //   subParsedText = cacheDOMByStarDesign(ele, sel)
+        // })
+        
+        parsedTextList = cacheDOMByStarDesign(ele, sel)
+        // const assembledSel = sel.split('*')
+        // let assembledText: string = ''
+        // assembledSel.forEach(function (asebl) {
+        //   ele(asebl).each(function (this: any) {
+        //     console.log(ele(this).text(), type, asebl, item, 'text(), type, asebl, item 测试')
+        //     assembledText = assembledText + ele(this).text()
+        //   })
+        // })
+        // if (assembledText) {
+        //   parsedTextList.push(assembledText)
+        // }
+
+        // ele(sel).each(function (this: any) {
+        //   console.log(ele(this).text(), type, sel, item, 'text(), type, sel, item 测试')
+        //   const thisText = ele(this).text()
+        //   thisText && parsedTextList.push(thisText);
+        // })
         // 声明类型，不然报错
         console.log(parsedTextList, 'parsedTextList')
         if (!wordCache[item as WordSimplyCacheType]) {
@@ -149,6 +175,38 @@ async function cacheWord(word: string, type: DictType, ele: any, cacheOrigin: Ca
   }
 
   setWordStorage(`${type}:${wordCache.word}`, wordCache)
+}
+
+function cacheDOMByStarDesign($: any, sel: string) {
+  // *：剔除，**：挑选，***：多元素相加
+  const is2Star = sel.includes('**')
+  let [root, ...delOrAddClass] = is2Star ? sel.split('**') : sel.split('*')
+  let selText: string[] = []
+
+  if (delOrAddClass.length === 0) {
+    $(root).each(function (this: any) {
+      const rootText = $(this).text()
+      rootText && selText.push(rootText)
+    })
+  } else {
+    $(root).each(function (this: any) {
+      let selAssembledText = ''
+      $(this).contents().each(function (this: any) {
+        // 包含文本、注释
+        const childNodeClass = $(this).attr('class')
+        const isAddOrDel = delOrAddClass.some(del => childNodeClass && childNodeClass.includes(del))
+        // !isAddOrDel && !is2Star： 当不包含 （由于不是双星，则表示剔除）class选择器，即不包含剔除的元素，就加上
+        // isAddOrDel && is2Star：当包含 （由于是双星，则表示添加）class选择器，即包含添加的元素，就加上
+        if (!isAddOrDel && !is2Star || isAddOrDel && is2Star) {
+          let toAdd = selAssembledText ? ' ' + $(this).text() : $(this).text()
+          selAssembledText = selAssembledText + toAdd
+        }
+      })
+      selAssembledText && selText.push(selAssembledText)
+    })
+
+  }
+  return selText
 }
 
 async function elementToNewNode(newEle: any, oldEle: any, selector: string) {

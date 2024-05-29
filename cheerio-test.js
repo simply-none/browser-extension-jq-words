@@ -1,5 +1,5 @@
 import cheerio from "cheerio";
-import { writeFileSync } from "fs";
+import { readFileSync, writeFileSync } from "fs";
 
 // import { html } from "./data.js";
 
@@ -161,21 +161,85 @@ async function elementToNewNode(newEle, oldEle, selector) {
 
 // console.log($.html())
 
-let length = 100000
+// let length = 100000
 
-let types = ['bing', 'youdao', 'collins', 'jinshan', 'longman', 'cambridge', 'webster', 'oxford', 'vocabulary', 'wordreference', 'haici']
+// let types = ['bing', 'youdao', 'collins', 'jinshan', 'longman', 'cambridge', 'webster', 'oxford', 'vocabulary', 'wordreference', 'haici']
 
-let searchList = {}
+// let searchList = {}
 
-for (let i = 0; i < length; i++) {
-  types.forEach(type => {
-    if (!searchList[type + '-fewalfejwa-' + i]) {
-      searchList[type + '-fewalfejwa-' + i] = []
-    }
-    searchList[type + '-fewalfejwa-' + i].push({
-      date: Date.now()
-    })
+// for (let i = 0; i < length; i++) {
+//   types.forEach(type => {
+//     if (!searchList[type + '-fewalfejwa-' + i]) {
+//       searchList[type + '-fewalfejwa-' + i] = []
+//     }
+//     searchList[type + '-fewalfejwa-' + i].push({
+//       date: Date.now()
+//     })
+//   })
+// }
+
+// writeFileSync('cheerio-test-a.json', JSON.stringify(searchList), 'utf-8')
+
+// var html = readFileSync('./cheerio-test.html', { encoding: 'utf-8'})
+
+// let $ = cheerio.load(html)
+// // 一颗星代表剔除后面的元素，两颗星代表只加上后面元素的内容
+// const sel = '.dpron-i*daud'
+// const is2Star = sel.includes('**')
+// let [root, ...delOrAddClass] = is2Star ? sel.split('**') : sel.split('*')
+// let selText = []
+
+// if (delOrAddClass.length === 0) {
+//   $(root).each(function() {
+//     const rootText = $(this).text()
+//     rootText && selText.push(rootText)
+//   })
+// } else {
+//   $(root).each(function() {
+//     let selAssembledText = ''
+//     $(this).contents().each(function() {
+//       // 包含文本、注释
+//       const childNodeClass = $(this).attr('class')
+//       const isAddOrDel = delOrAddClass.some(del => childNodeClass && childNodeClass.includes(del))
+//       // !isAddOrDel && !is2Star： 当不包含 （由于不是双星，则表示剔除）class选择器，即不包含剔除的元素，就加上
+//       // isAddOrDel && is2Star：当包含 （由于是双星，则表示添加）class选择器，即包含添加的元素，就加上
+//       if(!isAddOrDel && !is2Star || isAddOrDel && is2Star) {
+//         let toAdd = selAssembledText ? ' ' + $(this).text() : $(this).text()
+//         selAssembledText = selAssembledText + toAdd
+//       }
+//     })
+//     selAssembledText && selText.push(selAssembledText)
+//   })
+  
+// }
+
+// console.log(selText, 'selTEXT')
+
+
+
+// const example = '.hom****.gramGrp.pos***.sense**gramGrp|subc**cit|type-translation'
+
+// // 一步一步来， 以免造成混乱
+// const isStar4 = example.includes('****')
+// // 4星必然和3星连用，解决在同一个祖先元素下，不同级别的元素能够加起来的问题
+// const [eleRoot, ...addedEles] = isStar4 ? example.split('****') : []
+
+// if (addedEles.length > 0) {
+
+// }
+
+// const [addOrDelRoot, ...addOrDelClass] = 
+
+
+
+var html = readFileSync('./cheerio-test.html', { encoding: 'utf-8'})
+
+let $ = cheerio.load(html)
+
+// 查找后代元素，有了。
+$('body').find('.aaa').each(function () {
+  $(this).find('.a').each(function(){
+    console.log('a', $(this).html())
   })
-}
-
-writeFileSync('cheerio-test-a.json', JSON.stringify(searchList), 'utf-8')
+})
+console.log($('head link').html())

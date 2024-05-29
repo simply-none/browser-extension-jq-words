@@ -371,7 +371,7 @@ const cambridge: WordDOMProps = {
   existSelector: '.pos-body',
   cache: {
     trans: ['.def-body > .trans'],
-    phonetic: ['.dpron-i'],
+    phonetic: ['.dpron-i*daud'],
     morph: [],
   }
 }
