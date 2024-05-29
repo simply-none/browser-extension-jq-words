@@ -1,3 +1,16 @@
+import cambridgeCommonCss from '@/assets/cambridge/common.css?raw'
+import longmanCommmonCss from '@/assets/longman/common.css?raw'
+import websterCommonCss from '@/assets/webster/common.css?raw'
+import haiciCommonCss from '@/assets/haici/common.css?raw'
+import vocabularyCommonCss from '@/assets/vocabulary/common.css?raw'
+import oxfordCommonCss from '@/assets/oxford/common.css?raw'
+import jinshanCommonCss from '@/assets/jinshan/common.css?raw'
+import youdaoCommonCss from '@/assets/youdao/common.css?raw'
+import bingCommonCss from '@/assets/bing/common.css?raw'
+import collinsCommonCss from '@/assets/collins/common.css?raw'
+
+console.log(cambridgeCommonCss, 'cambridgeCommonCss')
+
 
 type DictDOMStyleType = 'insertedStyle' | 'deleted' | 'selected' | 'cache' | 'existSelector'
 
@@ -13,6 +26,7 @@ const youdao: WordDOMProps = {
   insertedStyle: [
     `
     <style>
+    ${youdaoCommonCss}
     *::-webkit-scrollbar {
       display: none;
     }
@@ -96,6 +110,7 @@ const collins: WordDOMProps = {
   insertedStyle: [
     `
     <style>
+    ${collinsCommonCss}
     *::-webkit-scrollbar {
       display: none;
     }
@@ -170,6 +185,7 @@ const collins: WordDOMProps = {
     '.ptr.hwd_sound.type-hwd_sound',
     '.copyright',
     'script[src]',
+    '.mpuslot_b-container',
   ],
   selected: [
     'body',
@@ -189,6 +205,7 @@ const bing: WordDOMProps = {
   insertedStyle: [
     `
     <style>
+    ${bingCommonCss}
     *::-webkit-scrollbar {
       display: none;
     }
@@ -248,6 +265,7 @@ const jinshan: WordDOMProps = {
   insertedStyle: [
     `
     <style>
+    ${jinshanCommonCss}
     *::-webkit-scrollbar {
       display: none;
     }
@@ -264,6 +282,9 @@ const jinshan: WordDOMProps = {
     }
     [class^=Content_fill] > ul {
       margin: 0;
+      padding: 0;
+    }
+    [class^=FoldBox_fold] {
       padding: 0;
     }
     </style>
@@ -286,6 +307,7 @@ const longman: WordDOMProps = {
   insertedStyle: [
     `
     <style>
+    ${longmanCommmonCss}
     *::-webkit-scrollbar {
       display: none;
     }
@@ -295,11 +317,16 @@ const longman: WordDOMProps = {
     #onetrust-banner-sdk.otFlat {
       display: none;
     }
+    .entry_content, .page_content, .error_content {
+      margin: 0;
+    }
     </style>
     `,
   ],
   deleted: [
     'script[src]',
+    '.pagetitle',
+    'span.dictentry > span.dictionary_intro.span'
   ],
   selected: [
     '.entry_content',
@@ -318,17 +345,23 @@ const cambridge: WordDOMProps = {
   insertedStyle: [
     `
     <style>
+    ${cambridgeCommonCss}
     *::-webkit-scrollbar {
       display: none;
     }
     #onetrust-banner-sdk.otFlat {
       display: none;
     }
+    .dpos-h_hw {
+      margin: 0;
+      font-size: 20px;
+    }
     </style>
     `,
   ],
   deleted: [
     'script[src]',
+    'audio > :not(source)',
   ],
   selected: [
     '.entry-body',
@@ -347,6 +380,7 @@ const webster: WordDOMProps = {
   insertedStyle: [
     `
     <style>
+    ${websterCommonCss}
     *::-webkit-scrollbar {
       display: none;
     }
@@ -364,6 +398,7 @@ const webster: WordDOMProps = {
     '.videos',
     '.section.citation',
     'script[src]',
+    'a > img',
   ],
   selected: [
     '#left-content',
@@ -382,6 +417,7 @@ const oxford: WordDOMProps = {
   insertedStyle: [
     `
     <style>
+    ${oxfordCommonCss}
     *::-webkit-scrollbar {
       display: none;
     }
@@ -419,6 +455,7 @@ const vocabulary: WordDOMProps = {
   insertedStyle: [
     `
     <style>
+    ${vocabularyCommonCss}
     *::-webkit-scrollbar {
       display: none;
     }
@@ -427,6 +464,7 @@ const vocabulary: WordDOMProps = {
   ],
   deleted: [
     'script[src]',
+    '.videos',
   ],
   selected: [
     '.definition-columns > .col-1',
@@ -466,6 +504,7 @@ const wordreference: WordDOMProps = {
     '#FTintro + .FTsource + .FTlist',
     '#postArticle',
     'script[src]',
+    '#listen_widget',
   ],
   selected: [
     '#centercolumn',
@@ -484,6 +523,7 @@ const haici: WordDOMProps = {
   insertedStyle: [
     `
     <style>
+    ${haiciCommonCss}
     *::-webkit-scrollbar {
       display: none;
     }

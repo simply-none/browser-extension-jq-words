@@ -3,7 +3,7 @@
     这是about
     <el-button @click="setHeight">设置高度</el-button>
     <div id="jous">
-      <iframe id="myIframe" ref="iref" :srcdoc="srcdoc" width="100%" :height="height"></iframe>
+      <iframe ref="iref" :srcdoc="srcdoc" width="100%" :height="height"></iframe>
 
     </div>
     <OpenNewWindow />

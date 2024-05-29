@@ -18,11 +18,19 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 let config: UserConfig = {
   resolve: {
     alias: {
+      'vue': 'vue/dist/vue.esm-bundler.js',
       '@': resolve(__dirname, 'src'),
     },
   },
   plugins: [
-    vue(),
+    vue({
+      template: {
+        compilerOptions: {
+          // 将所有带短横线的标签名都视为自定义元素
+          isCustomElement: (tag) => tag.startsWith('jade-custom-')
+        }
+      }
+    }),
     visualizer({
       // open: true
     }),

@@ -54,7 +54,7 @@
 
 <script lang="ts" setup>
 import { onMounted, ref, onBeforeUnmount, computed, watch, reactive } from 'vue'
-import WordFrame from './WordFrame.vue';
+import WordFrame from './WordFrame.ce.vue';
 import JadeDialog from '@/components/JadeDialog.vue';
 import {
   Star,
@@ -76,6 +76,11 @@ import {
 
 import { useContentStore } from '@/stores/content'
 import { storeToRefs } from 'pinia';
+
+// 注册自定义元素 --- start
+
+
+// 注册自定义元素 --- end
 
 const contentStore = useContentStore()
 const { searchDialogVisible } = storeToRefs(contentStore)
@@ -186,6 +191,7 @@ onBeforeUnmount(() => {
 })
 
 onMounted(() => {
+  console.log(window, 'window')
 })
 </script>
 
@@ -290,8 +296,8 @@ onMounted(() => {
   }
 }
 
-.el-collapse-item__header {
-  height: 36px;
-  line-height: 36px;
+:deep(.el-collapse-item__header) {
+  height: 24px;
+  line-height: 24px;
 }
 </style>

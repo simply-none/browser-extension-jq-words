@@ -1,4 +1,5 @@
 import cheerio from "cheerio";
+import { writeFileSync } from "fs";
 
 // import { html } from "./data.js";
 
@@ -156,6 +157,25 @@ async function elementToNewNode(newEle, oldEle, selector) {
 
 // debouncedFunction()
 
-let $ = cheerio.load('<div></div>')
+// let $ = cheerio.load('<div></div>')
 
-console.log($.html())
+// console.log($.html())
+
+let length = 100000
+
+let types = ['bing', 'youdao', 'collins', 'jinshan', 'longman', 'cambridge', 'webster', 'oxford', 'vocabulary', 'wordreference', 'haici']
+
+let searchList = {}
+
+for (let i = 0; i < length; i++) {
+  types.forEach(type => {
+    if (!searchList[type + '-fewalfejwa-' + i]) {
+      searchList[type + '-fewalfejwa-' + i] = []
+    }
+    searchList[type + '-fewalfejwa-' + i].push({
+      date: Date.now()
+    })
+  })
+}
+
+writeFileSync('cheerio-test-a.json', JSON.stringify(searchList), 'utf-8')

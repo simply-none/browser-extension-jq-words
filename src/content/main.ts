@@ -20,6 +20,8 @@ document.body.insertBefore(div, firstChild)
 const pinia = createPinia()
 const app = createApp(App)
 
+app.config.compilerOptions.isCustomElement = (tag) => tag.startsWith('jade-custom-')
+
 // app.use(ElementPlus)
 
 app.use(router)

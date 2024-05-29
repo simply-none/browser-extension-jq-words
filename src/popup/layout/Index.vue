@@ -79,4 +79,19 @@ const handleClose = (key: string, keyPath: string[]) => {
   height: 100%;
   width: 100%;
 }
+.el-row {
+    box-sizing: border-box;
+    display: flex;
+    flex-wrap: nowrap;
+    position: relative;
+}
+.el-col-6 {
+    width: 160px;
+    min-width: 160px;
+    flex: 0;
+}
+.el-col-18 {
+    flex: 1;
+    max-width: calc(100% - 160px);
+}
 </style>

@@ -193,6 +193,9 @@ const getData = (e: MouseEvent) => {
     return false;
   }
   if (isWord) {
+
+    // TODO: 重置数据
+
     position.value = {
       top: e.clientY,
       left: e.clientX

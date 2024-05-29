@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
-import { onMounted } from 'vue';
+import { onMounted, computed } from 'vue';
 
 import Layout from './layout/Index.vue'
+
+import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
+
+const locale = computed(() => zhCn)
 
 const route = useRoute()
 const router = useRouter()
@@ -21,12 +25,13 @@ onMounted(() => {
 </script>
 
 <template>
-  <Layout>
-    <template #main>
-      <header>标题</header>
-      <router-view />
-    </template>
-  </Layout>
+  <el-config-provider :locale="locale">
+    <Layout>
+      <template #main>
+        <router-view />
+      </template>
+    </Layout>
+  </el-config-provider>
 
 </template>
 

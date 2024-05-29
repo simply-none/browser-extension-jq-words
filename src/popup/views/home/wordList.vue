@@ -1,72 +1,115 @@
 <template>
-  <div class="demo-collapse">
-    <div>
+  <div class="jq-app-wordList jq-aw">
+    <Header title="单词列表">
       <el-button type="primary" @click="saveFile(storageCache)">备份数据</el-button>
-      <el-button type="danger" @click="clearCache">清空所有缓存</el-button>
+      <el-button type="danger" @click="clearCache">清空缓存</el-button>
+    </Header>
+
+    <div class="jq-aw-body" ref="jqAwBody">
+      <Search />
+      <el-table class="jq-aw-table" :data="table" style="width: 100%"  :max-height="tableMaxHeight">
+        <el-table-column type="expand" label="">
+          <template #default="{ row }">
+            <div class="wordlist-item">
+              <div class="wordlist-item-title">origin: </div>
+              <div class="wordlist-item" v-for="origin in row.origin" :key="origin.id">
+                <div class="wordlist-item-content">
+                  href: {{ origin.href }}
+                </div>
+                <div class="wordlist-item-content">
+                  date: {{ origin.date }}
+                </div>
+                <div class="wordlist-item-content">
+                  example: {{ origin.example }}
+                </div>
+              </div>
+            </div>
+
+            <div class="wordlist-item">
+              <div class="wordlist-item-title">phonetic: </div>
+              <div class="wordlist-item-content" v-for="phonetic in row.phonetic" :key="phonetic">
+                {{ phonetic }}
+              </div>
+            </div>
+
+            <div class="wordlist-item">
+              <div class="wordlist-title">trans: </div>
+              <div class="wordlist-item-content" v-for="trans in row.trans" :key="trans">
+                {{ trans }}
+              </div>
+            </div>
+
+            <div class="wordlist-item">
+              <div class="wordlist-item-title">morph: </div>
+              <div class="wordlist-item-content" v-for="morph in row.morph" :key="morph">
+                {{ morph }}
+              </div>
+            </div>
+
+          </template>
+        </el-table-column>
+        <el-table-column prop="word" label="单词" width="120">
+          <template #default="{ row }">
+            <div class="wordlist-item-line" :title="row.word">
+              {{ row.word }}
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="wordType" label="类型" width="180">
+          <template #default="{ row }">
+            <div class="wordlist-item-line" :title="row.wordType">
+              {{ row.wordType?.split(':')[0] }}
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="phonetic" label="音标">
+          <template #default="{ row }">
+            <div class="wordlist-item-line" :title="row.phonetic">
+              {{ row.phonetic }}
+            </div>
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="trans" label="翻译">
+          <template #default="{ row }">
+            <div class="wordlist-item-line" :title="row.trans">
+              {{ row.trans }}
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="morph" label="形近词">
+          <template #default="{ row }">
+            <div class="wordlist-item-line" :title="row.morph">
+              {{ row.morph }}
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column fixed="right" label="操作" width="60">
+          <template #default="scope">
+            <el-button link type="primary" size="small" @click="deleteItem(scope.row.wordType)">
+              删除
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <Page />
     </div>
-    <el-table :data="table" style="width: 100%" height="550">
-      <el-table-column type="expand" label="origin">
-        <template #default="{ row }">
-          <div class="wordlist-item">
-            <div class="wordlist-item-title">origin: </div>
-            <div class="wordlist-item" v-for="origin in row.origin" :key="origin.id">
-              <div class="wordlist-item-content">
-                href: {{ origin.href }}
-              </div>
-              <div class="wordlist-item-content">
-                date: {{ origin.date }}
-              </div>
-              <div class="wordlist-item-content">
-                example: {{ origin.example }}
-              </div>
-            </div>
-          </div>
-
-          <div class="wordlist-item">
-            <div class="wordlist-item-title">phonetic: </div>
-            <div class="wordlist-item-content" v-for="phonetic in row.phonetic" :key="phonetic">
-              {{ phonetic }}
-            </div>
-          </div>
-
-          <div class="wordlist-item">
-            <div class="wordlist-title">trans: </div>
-            <div class="wordlist-item-content" v-for="trans in row.trans" :key="trans">
-              {{ trans }}
-            </div>
-          </div>
-
-          <div class="wordlist-item">
-            <div class="wordlist-item-title">morph: </div>
-            <div class="wordlist-item-content" v-for="morph in row.morph" :key="morph">
-              {{ morph }}
-            </div>
-          </div>
-
-        </template>
-      </el-table-column>
-      <el-table-column prop="word" label="word" width="180" />
-      <el-table-column prop="wordType" label="wordType" width="180" />
-      <el-table-column prop="phonetic" label="phonetic" />
-
-      <el-table-column prop="trans" label="trans" />
-      <el-table-column prop="morph" label="morph" />
-      <el-table-column fixed="right" label="Operations">
-        <template #default="scope">
-          <el-button link type="primary" size="small" @click="deleteItem(scope.row.wordType)">
-            删除
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, nextTick } from 'vue'
+import type {Ref} from 'vue'
 import { ElCollapse, ElCollapseItem, ElButton } from 'element-plus';
+import Search from './Search.vue'
+import Header from './Header.vue'
+import Page from './Page.vue'
 
 let storageCache = ref({})
+
+let tableMaxHeight = ref(550)
+
+let jqAwBody: Ref<HTMLElement | null> = ref(null)
 
 const clearCache = () => {
   chrome.storage.local.clear().then(res => {
@@ -120,7 +163,6 @@ const mockTable = {
     ],
     "word": "function"
   },
-  "setting:selectedWordTypes": "[\"wordreference\",\"cambridge\"]",
   "wordreference:function": {
     "morph": [],
     "origin": [
@@ -209,16 +251,25 @@ const mockTable = {
 
 let table = ref<(WordCache & { wordType: string })[]>([])
 
-onMounted(async () => {
-  Object.keys(mockTable).forEach((key) => {
-      table.value.push({
-        wordType: key,
-        ...mockTable[key]
-      })
-    })
+let computedTableMaxHeight = async () => {
+  await nextTick()
+  console.log(jqAwBody.value, 'jqAwBody')
+  tableMaxHeight.value = jqAwBody.value?.clientHeight || 0
+  // const tableHeight = document.querySelector(".jq-aw")?.clientHeight
+}
 
-    console.log(storageCache, "storageCache Value is set");
-  await chrome.storage.local.get().then((items) => {
+onMounted(async () => {
+  computedTableMaxHeight()
+  Object.keys(mockTable).forEach((key) => {
+    table.value.push({
+      wordType: key,
+      ...mockTable[key]
+    })
+  })
+
+  console.log(storageCache, "storageCache Value is set");
+  try {
+    await chrome.storage.local.get().then((items) => {
     Object.keys(items).forEach((key) => {
       delete items[key].HTML
       table.value.push({
@@ -230,17 +281,34 @@ onMounted(async () => {
     storageCache.value = items;
     console.log(storageCache, "storageCache Value is set");
   });
+  } catch (e) {
+    console.log(e, 'e')
+  }
 })
 </script>
 
 <style lang="scss" scoped>
-
 :deep(.el-table) {
   .el-table__row td.el-table__cell {
     div {
       box-sizing: border-box;
-      height: 36px;
+      height: 2em;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
     }
+  }
+}
+
+.jq-aw {
+  height: 100%;
+  &-body {
+    padding: 0 18px 12px;
+    height: calc(100% - 70px);
+    box-sizing: border-box;
+  }
+  &-table {
+    height: calc(100% - 88px);
   }
 }
 

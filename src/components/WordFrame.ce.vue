@@ -1,5 +1,5 @@
 <template>
-  <iframe id="myIframe" ref="iref" :srcdoc="data" width="100%" :height="height"></iframe>
+  <iframe  ref="iref" :srcdoc="data" width="100%" :height="height"></iframe>
 </template>
 
 <script lang="ts" setup>
@@ -36,7 +36,7 @@ const setHeight = () => {
 .onetrust-banner-sdk {
   display: none;
 }
-#myIframe {
+iframe {
   border: 0;
 }
 </style>

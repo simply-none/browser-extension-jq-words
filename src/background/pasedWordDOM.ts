@@ -1,6 +1,7 @@
 import cheerio from 'cheerio'
 import wordDOMProps from './wordDOMProps'
 import { getWordStorage, setWordStorage } from './storage';
+import requestProps from './requestProps';
 
 interface ReqData<T> {
   type: 'error' | `info:${string}` | `req:${string}`;
@@ -28,6 +29,8 @@ function parsedWordDOM(word: string, type: DictType, html: string, cacheOrigin: 
     }
   }
 
+  // 先删除，后插入
+
   // 存储单词信息
   // 克隆节点，防止由于后续的增删改查，改变节点的内容
   const $clone = cheerio.load($.html())
@@ -35,8 +38,47 @@ function parsedWordDOM(word: string, type: DictType, html: string, cacheOrigin: 
 
   let deleted = wordDOMProps[type].deleted
   if (deleted) {
+    // 删掉所有的外链节点
+    $('link').remove()
+    $('script').each(function(this: any) {
+      const text = $(this).text()
+      if (text.includes('https://') || text.includes('http://') || text.includes('iaw') || text.includes('sendGAEvent')) {
+        // 删除所有包含外链的script
+        $(this).remove()
+      }
+    })
+    $('script').remove()
     deleted.forEach(deletedEle => {
       $(deletedEle).remove()
+    })
+  }
+
+  // 将相对路径替换为绝对路径(使得url正常)
+  // Set the 'src' attribute of an image element
+  const includesSourceHtml = ['src', 'href']
+  includesSourceHtml.forEach(function (item) {
+    $(`[${item}]`).each(function (this: any) {
+      const itemAttr = $(this).attr(item)
+      if (itemAttr && itemAttr.startsWith('/')) {
+        $(this).attr(item, requestProps[type].host + itemAttr)
+      }
+      // src资源跨域，删除罢
+      if(item === 'src') {
+        $(this).remove()
+      }
+    })
+  })
+  $('style').each(function (this: any) {
+    let style = $(this).text()
+    const reg = /(url\((.*)\))/g
+    style = style.replaceAll(reg, 'url(https://www.baidu.com$2)')
+    $(this).text(style)
+  })
+
+  let insertedStyle = wordDOMProps[type].insertedStyle
+  if (insertedStyle) {
+    insertedStyle.forEach(insertedEle => {
+      $(insertedEle).appendTo($new(`#${id}`))
     })
   }
 
@@ -54,12 +96,7 @@ function parsedWordDOM(word: string, type: DictType, html: string, cacheOrigin: 
   // $('head script').appendTo($new(`head`))
   $('head style').appendTo($new(`head`))
 
-  let insertedStyle = wordDOMProps[type].insertedStyle
-  if (insertedStyle) {
-    insertedStyle.forEach(insertedEle => {
-      $(insertedEle).appendTo($new(`#${id}`))
-    })
-  }
+  
 
   console.log($new, '$new in parsedWordDOM end')
   return {
@@ -88,9 +125,9 @@ async function cacheWord(word: string, type: DictType, ele: any, cacheOrigin: Ca
     wordCache.HTML = ele.html()
 
     Object.entries(wordDOMProps[type].cache).forEach(function ([item, selectorList]) {
-      
+
       selectorList.forEach(function (sel) {
-        
+
         const parsedTextList: string[] = []
         ele(sel).each(function (this: any) {
           console.log(ele(this).text(), type, sel, item, 'text(), type, sel, item 测试')
