@@ -99,9 +99,9 @@ const youdao: WordDOMProps = {
   ],
   existSelector: '#phrsListTab',
   cache: {
-    trans: ['#phrsListTab > div.trans-container > ul > li'],
+    trans: ['#phrsListTab > div.trans-container > ul > li', '#authTransToggle .wt-container****.title.trans-tip > span***.trans-content .ol > li > p***.trans-content .collinsMajorTrans > p'],
     phonetic: ['#phrsListTab  .pronounce'],
-    morph: ['#phrsListTab > div.trans-container > .additional'],
+    morph: ['#discriminate .collapse-content > :not(.via)'],
   }
 
 }
@@ -194,7 +194,7 @@ const collins: WordDOMProps = {
   ],
   existSelector: '.cB.cB-def.dictionary.biling',
   cache: {
-    trans: ['div.content.definitions.dictionary.biling > .hom'],
+    trans: ['div.content.definitions.dictionary.biling > .hom****.gramGrp.pos***.sense**.gramGrp.subc**.cit.type-translation'],
     phonetic: ['div.mini_h2.form'],
     morph: [],
   }
@@ -255,7 +255,7 @@ const bing: WordDOMProps = {
   ],
   existSelector: '.rs_area.b_cards',
   cache: {
-    trans: ['div.qdef > ul > li'],
+    trans: ['div.qdef > ul > li', '#authid .each_seg****.pos_lin .pos***.se_lis .de_co', '#crossid .def_row.df_div1****.pos.pos1***.def_fl > .de_li1.de_li3 .p1-1.b_regtxt', '#homoid .def_row.df_div1****.pos.pos1***.def_fl > .de_li1.de_li3 .df_cr_w', '#webid .df_div1 .def_row.de_li1.de_li4 .p1-1.b_regtxt'],
     phonetic: ['.hd_area div.b_primtxt'],
     morph: ['div.qdef > div.hd_div1'],
   }
@@ -335,7 +335,7 @@ const longman: WordDOMProps = {
   ],
   existSelector: '.dictionary',
   cache: {
-    trans: ['.dictlink'],
+    trans: ['.dictlink****.Head > .POS***.Sense**.GRAM**.DEF'],
     phonetic: ['.PronCodes'],
     morph: ['.wordfams'],
   }
@@ -370,8 +370,8 @@ const cambridge: WordDOMProps = {
   ],
   existSelector: '.pos-body',
   cache: {
-    trans: ['.def-body > .trans'],
-    phonetic: ['.dpron-i*daud'],
+    trans: ['.pr.entry-body__el .pr.dsense****.dsense_h***.def-block.ddef_block**.ddef_h**.def-body.ddef_b > .trans'],
+    phonetic: ['.dpron-i*.daud'],
     morph: [],
   }
 }
@@ -407,7 +407,7 @@ const webster: WordDOMProps = {
   ],
   existSelector: '.entry-word-section-container',
   cache: {
-    trans: ['.dtText'],
+    trans: ['.sb-entry > .sense .sense-content', '.sb-entry > .pseq.no-subnum'],
     phonetic: ['.prons-entries-list-inline'],
     morph: ['.mw-grid-table-list'],
   }
@@ -445,7 +445,7 @@ const oxford: WordDOMProps = {
   ],
   existSelector: '.senses_multiple',
   cache: {
-    trans: ['.def'],
+    trans: ['.sense**.grammar**.def'],
     phonetic: ['.phon'],
     morph: [],
   }
@@ -513,8 +513,8 @@ const wordreference: WordDOMProps = {
   ],
   existSelector: '#articleWRD',
   cache: {
-    trans: ['.ToWrd'],
-    phonetic: ['.pwrapper'],
+    trans: ['#articleWRD > table:nth-child(2)  .ToWrd>.zhgroup:first-child*.simplified*.pinyintxt*.copy'],
+    phonetic: ['.pwrapper*span:not([class])'],
     morph: ['dl.ListInfl'],
   }
 }
@@ -549,9 +549,9 @@ const haici: WordDOMProps = {
   ],
   existSelector: '.def',
   cache: {
-    trans: ['.def > .layout ol > li'],
+    trans: ['.def > .layout ol > li*p'],
     phonetic: ['.phonetic span'],
-    morph: ['.section.rel > .layout'],
+    morph: ['.section.rel > .layout > div:first-child', 'div.section.rel > .layout ul:nth-child(1) li'],
   }
 }
 

@@ -12,7 +12,7 @@
           <template #default="{ row }">
             <div class="wordlist-item">
               <div class="wordlist-item-title">origin: </div>
-              <div class="wordlist-item" v-for="origin in row.origin" :key="origin.id">
+              <div class="wordlist-item" v-for="origin in row.origin" :key="origin">
                 <div class="wordlist-item-content">
                   href: {{ origin.href }}
                 </div>

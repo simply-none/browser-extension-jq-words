@@ -3,6 +3,7 @@ import TestPopup from '@/components/TestPopup.vue'
 </script>
 
 <template>
+  <el-image src="chrome-extension://maeiinmmgdccfklknjlpinbahkljihph/vite.svg"/>
   <TestPopup msg="test-popup"/>
 </template>
 

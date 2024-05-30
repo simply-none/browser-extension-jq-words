@@ -1,6 +1,6 @@
 import cheerio from 'cheerio'
 import requestProps from './requestProps';
-import { parsedWordDOM } from './pasedWordDOM';
+import { cacheWord, parsedWordDOM } from './pasedWordDOM';
 import { getWordStorage } from './storage';
 interface ReqData<T> {
   type: 'error' | `info:${string}` | `req:${string}`;
@@ -107,7 +107,7 @@ function fetchWordDOM(word: string, type: DictType, port: chrome.runtime.Port, c
 
 async function parsedAndSendDOM (resText: string, word: string, type: DictType, port: chrome.runtime.Port, cacheOrigin: CacheOrigin) {
 
-    let $parsedWord = parsedWordDOM(word, type, resText, cacheOrigin)
+    let $parsedWord = parsedWordDOM(type, resText)
 
     let parsedWordDesc = ''
     if ($parsedWord.type === 'success') {
@@ -122,6 +122,9 @@ async function parsedAndSendDOM (resText: string, word: string, type: DictType, 
         ...requestProps,
       }
     })
+
+    // 缓存单词信息，放最后是保证不会阻碍页面渲染
+    cacheWord(word, type, resText, cacheOrigin)
 }
 
 // 保持扩展插件各个通道连接不关闭

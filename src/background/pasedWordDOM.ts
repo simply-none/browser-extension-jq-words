@@ -10,11 +10,13 @@ interface ReqData<T> {
 
 // utils----start
 
-function parsedWordDOM(word: string, type: DictType, html: string, cacheOrigin: CacheOrigin) {
+function parsedWordDOM(type: DictType, html: string) {
   let id = 'browser-extension-jq-words-' + type
 
   const $new = cheerio.load(`<div id='${id}'></div>`);
   const $ = cheerio.load(html);
+  // 克隆节点，防止由于后续的增删改查，改变节点的内容
+  const $clone = cheerio.load($.html())
 
   const isExistWord = $(wordDOMProps[type].existSelector)
 
@@ -28,13 +30,6 @@ function parsedWordDOM(word: string, type: DictType, html: string, cacheOrigin: 
       type: 'not'
     }
   }
-
-  // 先删除，后插入
-
-  // 存储单词信息
-  // 克隆节点，防止由于后续的增删改查，改变节点的内容
-  const $clone = cheerio.load($.html())
-  cacheWord(word, type, $clone, cacheOrigin)
 
   let deleted = wordDOMProps[type].deleted
   if (deleted) {
@@ -105,7 +100,8 @@ function parsedWordDOM(word: string, type: DictType, html: string, cacheOrigin: 
   }
 }
 
-async function cacheWord(word: string, type: DictType, ele: any, cacheOrigin: CacheOrigin) {
+export async function cacheWord(word: string, type: DictType, html: string, cacheOrigin: CacheOrigin) {
+  const ele = cheerio.load(html);
   // TODO：应当保存之前，先获取之前该word保存的内容，然后进行更新操作
   let wordCache: WordCache = {
     word: '',
@@ -132,34 +128,9 @@ async function cacheWord(word: string, type: DictType, ele: any, cacheOrigin: Ca
         // sel: '.dpron-i*daud'(删除)
         // *：剔除，**：挑选，***：多元素相加，****：表示处于某个元素下的内容进行其他*的操作, |: 表示多个类名
         // 举例：Collins：.hom****.gramGrp.pos***.sense**gramGrp|subc**cit|type-translation
-        let parsedTextList = []
-
         // TODO: 多元素相加有点难，后续处理
-        // let star3 = '***'
-        // let subParsedText = ''
-        // const is3Star = sel.includes(star3)
-        // sel.split(star3).forEach(subSel => {
-        //   subParsedText = cacheDOMByStarDesign(ele, sel)
-        // })
-        
-        parsedTextList = cacheDOMByStarDesign(ele, sel)
-        // const assembledSel = sel.split('*')
-        // let assembledText: string = ''
-        // assembledSel.forEach(function (asebl) {
-        //   ele(asebl).each(function (this: any) {
-        //     console.log(ele(this).text(), type, asebl, item, 'text(), type, asebl, item 测试')
-        //     assembledText = assembledText + ele(this).text()
-        //   })
-        // })
-        // if (assembledText) {
-        //   parsedTextList.push(assembledText)
-        // }
+        const parsedTextList = cacheDOMBy34StarDesign(ele, sel)
 
-        // ele(sel).each(function (this: any) {
-        //   console.log(ele(this).text(), type, sel, item, 'text(), type, sel, item 测试')
-        //   const thisText = ele(this).text()
-        //   thisText && parsedTextList.push(thisText);
-        // })
         // 声明类型，不然报错
         console.log(parsedTextList, 'parsedTextList')
         if (!wordCache[item as WordSimplyCacheType]) {
@@ -177,35 +148,130 @@ async function cacheWord(word: string, type: DictType, ele: any, cacheOrigin: Ca
   setWordStorage(`${type}:${wordCache.word}`, wordCache)
 }
 
-function cacheDOMByStarDesign($: any, sel: string) {
+function cacheDOMBy34StarDesign($: any, sel: string) {
+  let parsedTextList: string[] = []
+  let star3 = '***'
+  let star4 = '****'
+  const is4Star = sel.includes(star4)
+  // 有且仅有一个4星，必然有3星，否则无3星，仅有1-2星
+  if (is4Star) {
+    let [root, assembled3Star] = sel.split(star4)
+    // 3星元素的个数
+    let assembledEle3Star = assembled3Star.split(star3)
+    // root下，把3星的内容 拼接起来
+    console.log($(root).length, assembledEle3Star)
+    $(root).each(function (this: any) {
+      let assembledTuple: (string[])[] = []
+      let thisRoot = $(this)
+      assembledEle3Star.forEach(function (assembledItem, index) {
+        console.log('开始运行', assembledItem, root)
+        assembledTuple[index] = cacheDOMBy12StarDesign($, assembledItem, thisRoot)
+      })
+      let oneFluVal = assembledLevel2Array(assembledTuple)
+      console.log(oneFluVal, 'oneFluVal')
+      // 其中assembledA、B必然有一方为唯一元素，即一个root下，只能是A+多b，或者多A+b的情况
+      parsedTextList.push(...oneFluVal)
+    })
+  } else {
+    // 1-2星处理
+    parsedTextList = cacheDOMBy12StarDesign($, sel, $('html'))
+  }
+  parsedTextList = beautyResult(parsedTextList)
+  return parsedTextList
+}
+
+// 删除换行符、多个空格合并为一个
+function beautyResult (result: string[]) {
+  let res = result.map(item => item.replace(/([\r\n\t])*/g, '').replace(/([ ])+/g, ' ').trim())
+  res = Array.from(new Set(res))
+  console.log(res, '字符串数组结果美化')
+  return res
+}
+
+// 嵌套数组，数组元素各自相加
+function assembledLevel2Array(level2Array: string[][] = [[]]) {
+  return level2Array.reduce((prev, cur) => {
+    let total: string[] = []
+    let defaultPrev =  prev.length === 0 ? [''] : prev
+    let defaultCur = cur.length === 0 ? [''] : cur
+    defaultPrev.forEach(item => {
+      defaultCur.forEach(item2 => {
+        total.push(item + ' ' + item2)
+      })
+    })
+    return total
+  })
+}
+
+function cacheDOMBy12StarDesign($: any, sel: string, rootSelThis: any) {
+  console.log('运行次数')
   // *：剔除，**：挑选，***：多元素相加
   const is2Star = sel.includes('**')
   let [root, ...delOrAddClass] = is2Star ? sel.split('**') : sel.split('*')
   let selText: string[] = []
 
   if (delOrAddClass.length === 0) {
-    $(root).each(function (this: any) {
-      const rootText = $(this).text()
-      rootText && selText.push(rootText)
-    })
-  } else {
-    $(root).each(function (this: any) {
-      let selAssembledText = ''
-      $(this).contents().each(function (this: any) {
-        // 包含文本、注释
-        const childNodeClass = $(this).attr('class')
-        const isAddOrDel = delOrAddClass.some(del => childNodeClass && childNodeClass.includes(del))
-        // !isAddOrDel && !is2Star： 当不包含 （由于不是双星，则表示剔除）class选择器，即不包含剔除的元素，就加上
-        // isAddOrDel && is2Star：当包含 （由于是双星，则表示添加）class选择器，即包含添加的元素，就加上
-        if (!isAddOrDel && !is2Star || isAddOrDel && is2Star) {
-          let toAdd = selAssembledText ? ' ' + $(this).text() : $(this).text()
-          selAssembledText = selAssembledText + toAdd
-        }
+    console.log(rootSelThis.length, 'rootsel')
+    rootSelThis.each(function (this: any) {
+      console.log($(this).find(root).length, '测试1', sel)
+      $(this).find(root).each(function (this: any) {
+        const rootText = $(this).text()
+        rootText && selText.push(rootText)
       })
-      selAssembledText && selText.push(selAssembledText)
+    })
+
+  } else {
+    rootSelThis.each(function (this: any) {
+      console.log($(this).find(root).length, '测试12', sel)
+      $(this).find(root).each(function (this: any) {
+        console.log($(this).text(), '怎么没进来')
+        let selAssembledText = ''
+        let rootT = $(this)
+        // TODO：内容修改
+        delOrAddClass.forEach(delOrAddItem => {
+          console.log(delOrAddItem, '测试3')
+          // 由于是类名相加，故而每个delOrAddItem都只能获取到一个，不然肯定有错误
+          rootT.find(delOrAddItem).each(function (this: any) {
+            console.log($(this).text(), '测试2', sel)
+              if (is2Star) {
+                let toAdd = selAssembledText ? ' ' + $(this).text() : $(this).text()
+                selAssembledText = selAssembledText + toAdd
+              } else {
+                console.log('来删除了？？？？')
+                $(this).remove()
+              }
+          })
+        })
+        !is2Star && (selAssembledText = $(this).text())
+        console.log(selAssembledText, '完整的内容')
+        selAssembledText && selText.push(selAssembledText)
+        // TODO: 这里由选择类名，改成选择类名对应元素的文本
+        // $(this).contents().each(function (this: any) {
+        //   // 包含文本、注释
+        //   const childNodeClass = $(this).attr('class')
+          
+        //   const isAddOrDel = delOrAddClass.some(del => {
+        //     if (!childNodeClass) {
+        //       return false
+        //     }
+        //     const delClassArray = del.split('|')
+        //     return delClassArray.every(item => childNodeClass.includes(item))
+        //   })
+        //   // !isAddOrDel && !is2Star： 当不包含 （由于不是双星，则表示剔除）class选择器，即不包含剔除的元素，就加上
+        //   // isAddOrDel && is2Star：当包含 （由于是双星，则表示添加）class选择器，即包含添加的元素，就加上
+        //   if (!isAddOrDel && !is2Star || isAddOrDel && is2Star) {
+        //     let toAdd = selAssembledText ? ' ' + $(this).text() : $(this).text()
+        //     selAssembledText = selAssembledText + toAdd
+        //   }
+        // })
+        // selAssembledText && selText.push(selAssembledText)
+      })
+
     })
 
   }
+  selText = beautyResult(selText)
+  console.log(selText, '每次循环的值')
   return selText
 }
 
