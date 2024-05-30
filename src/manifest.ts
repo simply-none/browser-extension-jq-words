@@ -48,6 +48,14 @@ const manifest: chrome.runtime.Manifest = {
       ]
     }
   ],
+  web_accessible_resources: [
+    {
+      resources: [
+        'assets/*'
+      ],
+      matches: ['<all_urls>'],
+    }
+  ],
   action: {
     default_popup: 'src/popup/index.html',
   },

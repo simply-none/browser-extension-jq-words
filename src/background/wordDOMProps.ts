@@ -1,17 +1,3 @@
-import cambridgeCommonCss from '@/assets/cambridge/common.css?raw'
-import longmanCommmonCss from '@/assets/longman/common.css?raw'
-import websterCommonCss from '@/assets/webster/common.css?raw'
-import haiciCommonCss from '@/assets/haici/common.css?raw'
-import vocabularyCommonCss from '@/assets/vocabulary/common.css?raw'
-import oxfordCommonCss from '@/assets/oxford/common.css?raw'
-import jinshanCommonCss from '@/assets/jinshan/common.css?raw'
-import youdaoCommonCss from '@/assets/youdao/common.css?raw'
-import bingCommonCss from '@/assets/bing/common.css?raw'
-import collinsCommonCss from '@/assets/collins/common.css?raw'
-
-console.log(cambridgeCommonCss, 'cambridgeCommonCss')
-
-
 type DictDOMStyleType = 'insertedStyle' | 'deleted' | 'selected' | 'cache' | 'existSelector'
 
 interface WordDOMProps {
@@ -26,7 +12,6 @@ const youdao: WordDOMProps = {
   insertedStyle: [
     `
     <style>
-    ${youdaoCommonCss}
     *::-webkit-scrollbar {
       display: none;
     }
@@ -110,7 +95,6 @@ const collins: WordDOMProps = {
   insertedStyle: [
     `
     <style>
-    ${collinsCommonCss}
     *::-webkit-scrollbar {
       display: none;
     }
@@ -205,7 +189,6 @@ const bing: WordDOMProps = {
   insertedStyle: [
     `
     <style>
-    ${bingCommonCss}
     *::-webkit-scrollbar {
       display: none;
     }
@@ -265,7 +248,6 @@ const jinshan: WordDOMProps = {
   insertedStyle: [
     `
     <style>
-    ${jinshanCommonCss}
     *::-webkit-scrollbar {
       display: none;
     }
@@ -307,7 +289,6 @@ const longman: WordDOMProps = {
   insertedStyle: [
     `
     <style>
-    ${longmanCommmonCss}
     *::-webkit-scrollbar {
       display: none;
     }
@@ -345,7 +326,6 @@ const cambridge: WordDOMProps = {
   insertedStyle: [
     `
     <style>
-    ${cambridgeCommonCss}
     *::-webkit-scrollbar {
       display: none;
     }
@@ -380,7 +360,6 @@ const webster: WordDOMProps = {
   insertedStyle: [
     `
     <style>
-    ${websterCommonCss}
     *::-webkit-scrollbar {
       display: none;
     }
@@ -417,7 +396,6 @@ const oxford: WordDOMProps = {
   insertedStyle: [
     `
     <style>
-    ${oxfordCommonCss}
     *::-webkit-scrollbar {
       display: none;
     }
@@ -455,7 +433,6 @@ const vocabulary: WordDOMProps = {
   insertedStyle: [
     `
     <style>
-    ${vocabularyCommonCss}
     *::-webkit-scrollbar {
       display: none;
     }
@@ -523,7 +500,6 @@ const haici: WordDOMProps = {
   insertedStyle: [
     `
     <style>
-    ${haiciCommonCss}
     *::-webkit-scrollbar {
       display: none;
     }

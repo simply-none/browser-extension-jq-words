@@ -11,6 +11,9 @@ import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
+import commonjsExternals from 'vite-plugin-commonjs-externals';
+
+
 import manifest from './src/manifest'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -20,6 +23,7 @@ let config: UserConfig = {
     alias: {
       'vue': 'vue/dist/vue.esm-bundler.js',
       '@': resolve(__dirname, 'src'),
+      'public': resolve(__dirname, 'public')
     },
   },
   plugins: [
@@ -31,6 +35,9 @@ let config: UserConfig = {
         }
       }
     }),
+    commonjsExternals({
+		  externals: ['fs','canvas','zlib','http','https','url'] //这里
+		}),
     visualizer({
       // open: true
     }),

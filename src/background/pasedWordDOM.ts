@@ -71,11 +71,7 @@ function parsedWordDOM(type: DictType, html: string) {
   })
 
   let insertedStyle = wordDOMProps[type].insertedStyle
-  if (insertedStyle) {
-    insertedStyle.forEach(insertedEle => {
-      $(insertedEle).appendTo($new(`#${id}`))
-    })
-  }
+  
 
   wordDOMProps[type].selected.forEach(async selector => {
     // TODO：怎么处理style污染全局，同时能够确保插入到页面中的单词样式尽可能保持原样的问题。
@@ -87,11 +83,24 @@ function parsedWordDOM(type: DictType, html: string) {
     await elementToNewNode($new(`#${id}`), $, selector)
   })
 
+  // -----------------------插入样式
   // $('head link').appendTo($new(`head`))
   // $('head script').appendTo($new(`head`))
-  $('head style').appendTo($new(`head`))
+  $('head style').appendTo($new(`body`))
 
+  const getTestCssUrl = chrome.runtime.getURL(`assets/css/${type}/common.css`)
+  console.log(getTestCssUrl, '测试图片地址')
+  $(`
+  <link crossorigin="anonymous" media="all" rel="stylesheet" href="${getTestCssUrl}"/>
+  `).appendTo($new(`body`))
 
+  if (insertedStyle) {
+    insertedStyle.forEach(insertedEle => {
+      $(insertedEle).appendTo($new(`body`))
+    })
+  }
+  // -----------------------插入样式
+  
 
   console.log($new, '$new in parsedWordDOM end')
   return {
