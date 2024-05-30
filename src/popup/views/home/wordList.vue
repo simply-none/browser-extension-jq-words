@@ -7,20 +7,22 @@
 
     <div class="jq-aw-body" ref="jqAwBody">
       <Search />
-      <el-table class="jq-aw-table" :data="table" style="width: 100%"  :max-height="tableMaxHeight">
+      <el-table class="jq-aw-table" :data="table" style="width: 100%" :max-height="tableMaxHeight">
         <el-table-column type="expand" label="">
           <template #default="{ row }">
             <div class="wordlist-item">
               <div class="wordlist-item-title">origin: </div>
               <div class="wordlist-item" v-for="origin in row.origin" :key="origin">
-                <div class="wordlist-item-content">
-                  href: {{ origin.href }}
-                </div>
-                <div class="wordlist-item-content">
-                  date: {{ origin.date }}
-                </div>
-                <div class="wordlist-item-content">
-                  example: {{ origin.example }}
+                <div v-if="origin">
+                  <div class="wordlist-item-content">
+                    href: {{ origin.href }}
+                  </div>
+                  <div class="wordlist-item-content">
+                    date: {{ origin.date }}
+                  </div>
+                  <div class="wordlist-item-content">
+                    example: {{ origin.example }}
+                  </div>
                 </div>
               </div>
             </div>
@@ -28,21 +30,24 @@
             <div class="wordlist-item">
               <div class="wordlist-item-title">phonetic: </div>
               <div class="wordlist-item-content" v-for="phonetic in row.phonetic" :key="phonetic">
-                {{ phonetic }}
+                <div v-if="phonetic">
+                  {{ phonetic }}</div>
               </div>
             </div>
 
             <div class="wordlist-item">
               <div class="wordlist-title">trans: </div>
               <div class="wordlist-item-content" v-for="trans in row.trans" :key="trans">
-                {{ trans }}
+                <div v-if="trans">
+                  {{ trans }}</div>
               </div>
             </div>
 
             <div class="wordlist-item">
               <div class="wordlist-item-title">morph: </div>
               <div class="wordlist-item-content" v-for="morph in row.morph" :key="morph">
-                {{ morph }}
+                <div v-if="morph">
+                  {{ morph }}</div>
               </div>
             </div>
 
@@ -99,7 +104,7 @@
 
 <script lang="ts" setup>
 import { onMounted, ref, nextTick } from 'vue'
-import type {Ref} from 'vue'
+import type { Ref } from 'vue'
 import { ElCollapse, ElCollapseItem, ElButton } from 'element-plus';
 import Search from './Search.vue'
 import Header from './Header.vue'
@@ -270,17 +275,17 @@ onMounted(async () => {
   console.log(storageCache, "storageCache Value is set");
   try {
     await chrome.storage.local.get().then((items) => {
-    Object.keys(items).forEach((key) => {
-      delete items[key].HTML
-      table.value.push({
-        wordType: key,
-        ...items[key]
+      Object.keys(items).forEach((key) => {
+        delete items[key].HTML
+        table.value.push({
+          wordType: key,
+          ...items[key]
+        })
       })
-    })
 
-    storageCache.value = items;
-    console.log(storageCache, "storageCache Value is set");
-  });
+      storageCache.value = items;
+      console.log(storageCache, "storageCache Value is set");
+    });
   } catch (e) {
     console.log(e, 'e')
   }
@@ -302,11 +307,13 @@ onMounted(async () => {
 
 .jq-aw {
   height: 100%;
+
   &-body {
     padding: 0 18px 12px;
     height: calc(100% - 70px);
     box-sizing: border-box;
   }
+
   &-table {
     height: calc(100% - 88px);
   }
