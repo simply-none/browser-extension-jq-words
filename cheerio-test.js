@@ -1,11 +1,11 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-var cheerio_1 = __importDefault(require("cheerio"));
-// const cheerio = require("cheerio");
-var fs_1 = require("fs");
+// "use strict";
+// var __importDefault = (this && this.__importDefault) || function (mod) {
+//     return (mod && mod.__esModule) ? mod : { "default": mod };
+// };
+// Object.defineProperty(exports, "__esModule", { value: true });
+// var cheerio_1 = __importDefault(require("cheerio"));
+// // const cheerio = require("cheerio");
+// var fs_1 = require("fs");
 // import { html } from "./data.js";
 // import { readFileSync, writeFileSync } from "fs";
 // const html = readFileSync("data.js", "utf-8");
@@ -212,79 +212,101 @@ var collinsInsertedEle = [
 //   return total
 // })
 // console.log(total, 't')
-var sel = '';
-var html = (0, fs_1.readFileSync)('./cheerio-test.html', { encoding: 'utf-8' });
-// let $ = cheerio.load(html)
-var ele = cheerio_1.default.load(html);
-var result = cacheDOMBy34StarDesign(ele, sel);
-console.log(result, 'result');
-function cacheDOMBy34StarDesign($, sel) {
-    var parsedTextList = [];
-    var star3 = '***';
-    var star4 = '****';
-    var is4Star = sel.includes(star4);
-    // 有且仅有一个4星，必然有3星，否则无3星，仅有1-2星
-    if (is4Star) {
-        var _a = sel.split(star4), root_1 = _a[0], assembled3Star = _a[1];
-        // 3星元素的个数
-        var assembledEle3Star_1 = assembled3Star.split(star3);
-        // root下，把3星的内容 拼接起来
-        $(root_1).each(function () {
-            var assembledTuple = [];
-            assembledEle3Star_1.forEach(function (assembledItem, index) {
-                assembledTuple[index] = cacheDOMBy12StarDesign($, assembledItem, root_1);
-            });
-            // 其中assembledA、B必然有一方为唯一元素，即一个root下，只能是A+多b，或者多A+b的情况
-            parsedTextList = assembledLevel2Array(assembledTuple);
-        });
-    }
-    else {
-        // 1-2星处理
-        parsedTextList = cacheDOMBy12StarDesign($, sel);
-    }
-    return parsedTextList;
+// var sel = '';
+// var html = (0, fs_1.readFileSync)('./cheerio-test.html', { encoding: 'utf-8' });
+// // let $ = cheerio.load(html)
+// var ele = cheerio_1.default.load(html);
+// var result = cacheDOMBy34StarDesign(ele, sel);
+// console.log(result, 'result');
+// function cacheDOMBy34StarDesign($, sel) {
+//     var parsedTextList = [];
+//     var star3 = '***';
+//     var star4 = '****';
+//     var is4Star = sel.includes(star4);
+//     // 有且仅有一个4星，必然有3星，否则无3星，仅有1-2星
+//     if (is4Star) {
+//         var _a = sel.split(star4), root_1 = _a[0], assembled3Star = _a[1];
+//         // 3星元素的个数
+//         var assembledEle3Star_1 = assembled3Star.split(star3);
+//         // root下，把3星的内容 拼接起来
+//         $(root_1).each(function () {
+//             var assembledTuple = [];
+//             assembledEle3Star_1.forEach(function (assembledItem, index) {
+//                 assembledTuple[index] = cacheDOMBy12StarDesign($, assembledItem, root_1);
+//             });
+//             // 其中assembledA、B必然有一方为唯一元素，即一个root下，只能是A+多b，或者多A+b的情况
+//             parsedTextList = assembledLevel2Array(assembledTuple);
+//         });
+//     }
+//     else {
+//         // 1-2星处理
+//         parsedTextList = cacheDOMBy12StarDesign($, sel);
+//     }
+//     return parsedTextList;
+// }
+// // 嵌套数组，数组元素各自相加
+// function assembledLevel2Array(level2Array) {
+//     if (level2Array === void 0) { level2Array = [[]]; }
+//     return level2Array.reduce(function (prev, cur) {
+//         var total = [];
+//         prev.forEach(function (item) {
+//             cur.forEach(function (item2) {
+//                 total.push(item + item2);
+//             });
+//         });
+//         return total;
+//     });
+// }
+// function cacheDOMBy12StarDesign($, sel, rootSel) {
+//     if (rootSel === void 0) { rootSel = 'html'; }
+//     // *：剔除，**：挑选，***：多元素相加
+//     var is2Star = sel.includes('**');
+//     var _a = is2Star ? sel.split('**') : sel.split('*'), root = _a[0], delOrAddClass = _a.slice(1);
+//     var selText = [];
+//     if (delOrAddClass.length === 0) {
+//         $(rootSel).find(root).each(function () {
+//             var rootText = $(this).text();
+//             rootText && selText.push(rootText);
+//         });
+//     }
+//     else {
+//         $(rootSel).find(root).each(function () {
+//             var selAssembledText = '';
+//             $(this).contents().each(function () {
+//                 // 包含文本、注释
+//                 var childNodeClass = $(this).attr('class');
+//                 var isAddOrDel = delOrAddClass.some(function (del) { return childNodeClass && childNodeClass.includes(del); });
+//                 // !isAddOrDel && !is2Star： 当不包含 （由于不是双星，则表示剔除）class选择器，即不包含剔除的元素，就加上
+//                 // isAddOrDel && is2Star：当包含 （由于是双星，则表示添加）class选择器，即包含添加的元素，就加上
+//                 if (!isAddOrDel && !is2Star || isAddOrDel && is2Star) {
+//                     var toAdd = selAssembledText ? ' ' + $(this).text() : $(this).text();
+//                     selAssembledText = selAssembledText + toAdd;
+//                 }
+//             });
+//             selAssembledText && selText.push(selAssembledText);
+//         });
+//     }
+//     return selText;
+// }
+
+
+async function getItem (key = null) {
+    return { a: Date.now(), key: key }
 }
-// 嵌套数组，数组元素各自相加
-function assembledLevel2Array(level2Array) {
-    if (level2Array === void 0) { level2Array = [[]]; }
-    return level2Array.reduce(function (prev, cur) {
-        var total = [];
-        prev.forEach(function (item) {
-            cur.forEach(function (item2) {
-                total.push(item + item2);
-            });
-        });
-        return total;
-    });
-}
-function cacheDOMBy12StarDesign($, sel, rootSel) {
-    if (rootSel === void 0) { rootSel = 'html'; }
-    // *：剔除，**：挑选，***：多元素相加
-    var is2Star = sel.includes('**');
-    var _a = is2Star ? sel.split('**') : sel.split('*'), root = _a[0], delOrAddClass = _a.slice(1);
-    var selText = [];
-    if (delOrAddClass.length === 0) {
-        $(rootSel).find(root).each(function () {
-            var rootText = $(this).text();
-            rootText && selText.push(rootText);
-        });
+
+async function get (key) {
+    let a = {}
+    if (key) {
+        await getItem(key).then(item => {
+            a = item
+        })
+    } else {
+        await getItem().then(item => {
+            a = item
+        })
     }
-    else {
-        $(rootSel).find(root).each(function () {
-            var selAssembledText = '';
-            $(this).contents().each(function () {
-                // 包含文本、注释
-                var childNodeClass = $(this).attr('class');
-                var isAddOrDel = delOrAddClass.some(function (del) { return childNodeClass && childNodeClass.includes(del); });
-                // !isAddOrDel && !is2Star： 当不包含 （由于不是双星，则表示剔除）class选择器，即不包含剔除的元素，就加上
-                // isAddOrDel && is2Star：当包含 （由于是双星，则表示添加）class选择器，即包含添加的元素，就加上
-                if (!isAddOrDel && !is2Star || isAddOrDel && is2Star) {
-                    var toAdd = selAssembledText ? ' ' + $(this).text() : $(this).text();
-                    selAssembledText = selAssembledText + toAdd;
-                }
-            });
-            selAssembledText && selText.push(selAssembledText);
-        });
-    }
-    return selText;
+    console.log(a)
+    return a
 }
+
+console.log(await get(23), 1)

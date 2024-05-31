@@ -1,7 +1,8 @@
 import cheerio from 'cheerio'
 import requestProps from './requestProps';
 import { cacheWord, parsedWordDOM } from './pasedWordDOM';
-import { getWordStorage } from './storage';
+import { getLocalStorage, setLocalStorage } from '@/utils/storage';
+import { formatDate } from '@/utils/common';
 interface ReqData<T> {
   type: 'error' | `info:${string}` | `req:${string}`;
   data: T;
@@ -54,14 +55,13 @@ async function listenMultiMsg(port: chrome.runtime.Port, data: ReqData<{ word: s
   }
 
   let selectWordTypes:DictType[] = ['youdao', 'bing', 'longman']
-  await chrome.storage.local.get('setting:selectedWordTypes').then((items) => {
-    console.log(items, "Value is get");
-    const fetchWordTypes = items['setting:selectedWordTypes']
-    if (fetchWordTypes) {
-      selectWordTypes = JSON.parse(fetchWordTypes)
-    }
-  });
-  // ['bing', 'youdao', 'collins', 'jinshan', 'longman', 'cambridge', 'webster', 'oxford', 'vocabulary', 'wordreference', 'haici']
+  const items = await getLocalStorage('setting:selectedWordTypes')
+  console.log(items, "Value is get");
+  const fetchWordTypes = items['setting:selectedWordTypes']
+  if (fetchWordTypes) {
+    selectWordTypes = JSON.parse(fetchWordTypes)
+  }
+  
   let selectWordTypeGroup: DictType[] = selectWordTypes
 
   const requests = selectWordTypeGroup.map(type => {
@@ -75,12 +75,20 @@ async function listenMultiMsg(port: chrome.runtime.Port, data: ReqData<{ word: s
   })
   // 避免关闭请求连接的通道，可特定保持5s的长连接
   // keepLongConnection(port)
+
+  // 缓存单词索引，方便后续选择性获取部分单词
+  cacheWordIndex(word)
 }
 
 function getSingleWordByType (word: string, type: DictType, port: chrome.runtime.Port, cacheOrigin: CacheOrigin) {
   return new Promise(async (res) => {
       // 获取之前是否存储过该值，有就不请求网络
-      const wordCache:WordCache = await getWordStorage(type, word)
+      let wordCache: WordCache = {} as WordCache
+      let cacheKey = `${type}:${word}`
+      let items = await getLocalStorage(cacheKey)
+      if (items[cacheKey]) {
+        wordCache = items[cacheKey] as WordCache
+      }
       console.log(wordCache, 'wordCache')
       if (wordCache.word) {
         parsedAndSendDOM(wordCache.HTML, word, type, port, cacheOrigin)
@@ -127,6 +135,40 @@ async function parsedAndSendDOM (resText: string, word: string, type: DictType, 
     cacheWord(word, type, resText, cacheOrigin)
 }
 
+/**
+ * word:index: 存单词，word-date:index：存记录过单词的日期，word-date:2024-02-23：存该日期下记录过的单词
+ * @param word 
+ */
+async function cacheWordIndex(word: string) {
+  let type = 'word'
+  let dateType = 'word-date'
+  let curDate = formatDate(new Date(), 'date')
+  const items = await getLocalStorage([`${type}:index`, `${dateType}:index`, `${dateType}:${curDate}`])
+  // 存单词列表，例如：['a', 'b']
+  let wordIndexCache = items[`${type}:index`] as string[] || []
+  // 存日期列表，例如：['2024-01-01', '2024-02-03']
+  let dateIndexCache = items[`${dateType}:index`] as string[] || []
+  // 存当天记录过的单词，例如：['a', 'b']
+  let dateWordCache = items[`${dateType}:${curDate}`] as string[] || []
+
+  console.log('缓存单词索引', word, wordIndexCache)
+  if (!wordIndexCache.includes(word)) {
+    wordIndexCache.push(word)
+  }
+  if (!dateIndexCache.includes(curDate)) {
+    dateIndexCache.push(curDate)
+  }
+  if (!dateWordCache.includes(word)) {
+    dateWordCache.push(word)
+  }
+
+  setLocalStorage({
+    [`${type}:index`]: wordIndexCache,
+    [`${dateType}:index`]: dateIndexCache,
+    [`${dateType}:${curDate}`]: dateWordCache,
+  })
+
+}
 // 保持扩展插件各个通道连接不关闭
 function keepLongConnection(port: chrome.runtime.Port) {
   let count = 0

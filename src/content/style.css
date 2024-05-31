@@ -1,1 +1,3 @@
-
+#jade-custom iframe {
+  border: 0 !important;
+}

@@ -1,7 +1,7 @@
 import cheerio from 'cheerio'
 import wordDOMProps from './wordDOMProps'
-import { getWordStorage, setWordStorage } from './storage';
 import requestProps from './requestProps';
+import { getLocalStorage, setLocalStorage } from '@/utils/storage';
 
 interface ReqData<T> {
   type: 'error' | `info:${string}` | `req:${string}`;
@@ -120,7 +120,11 @@ export async function cacheWord(word: string, type: DictType, html: string, cach
     phonetic: [],
     morph: [],
   }
-  wordCache = await getWordStorage(type, word)
+  let cacheKey = `${type}:${word}`
+  let items = await getLocalStorage(cacheKey)
+  if (items[cacheKey]) {
+    wordCache = items[cacheKey] as WordCache
+  }
   console.log(wordCache, 'wordCache in cacheWord')
 
   // 仅当之前未存储，才将dom源存入
@@ -154,7 +158,12 @@ export async function cacheWord(word: string, type: DictType, html: string, cach
     console.log(wordCache, 'parsedTextList in cacheWord wordCache.word else')
   }
 
-  setWordStorage(`${type}:${wordCache.word}`, wordCache)
+  setLocalStorage(`${type}:${wordCache.word}`, wordCache, {
+    onSuccess() {
+      // TODO:原先的内容是：
+      // getLocalStorage(`${type}:${wordCache.word}`)
+    }
+  })
 }
 
 function cacheDOMBy34StarDesign($: any, sel: string) {

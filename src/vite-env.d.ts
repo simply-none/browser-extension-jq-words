@@ -9,6 +9,13 @@
 //   export default component;
 // }
 
+type AnyTypeObj = { [key: string]: any }
+
+type CallbackOptions = {
+  onSuccess?: (res: any) => void;
+  onError?: (err: any) => void;
+}
+
 type DictType =
   'youdao' |
   'bing' |
@@ -53,3 +60,5 @@ interface ReqData<T> {
 }
 
 type WordSimplyCacheType = 'trans' | 'phonetic' | 'morph'
+
+type StorageType = 'history'

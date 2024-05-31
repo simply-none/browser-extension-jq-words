@@ -1,10 +1,11 @@
 <template>
   <div id="test-popup">
-    <SearchResult :position="position" :wordList="selectedWordList" :info="info" @getWords="debouncedFunction" @topHandle="topHandle" />
+    <SearchResult :position="position" :wordList="selectedWordList" :info="info" @getWords="debouncedFunction"
+      @topHandle="topHandle" />
     <JadeIconDialog :visible="iconDialogVisible" :position="position">
       <template #content>
         <div @mouseover="mouseOverFn" @mouseleave="mouseLeaveFn" style="width: 100%;height: 100%;">
-          <IconDialogSvg/>
+          <IconDialogSvg />
         </div>
       </template>
     </JadeIconDialog>
@@ -15,7 +16,7 @@
 import SearchResult from "@/components/SearchResult.vue";
 import JadeIconDialog from '@/components/JadeIconDialog.vue'
 import IconDialogSvg from '@/components/IconDialogSvg.vue'
-import { debounce } from "@/utils/common";
+import { debounce, formatDate } from "@/utils/common";
 
 import {
   toRaw,
@@ -54,6 +55,8 @@ const mouseLeaveFn = (e: MouseEvent) => {
 }
 
 defineProps<{ msg: string }>();
+
+let currentUrf = ref('')
 
 let data = ref();
 let info = ref({
@@ -218,20 +221,7 @@ const getData = (e: MouseEvent) => {
   }
 };
 
-const formatDate = (dat: Date) => {
-  //获取年月日，时间
-  let year = dat.getFullYear();
-  let mon =
-    dat.getMonth() + 1 < 10 ? "0" + (dat.getMonth() + 1) : dat.getMonth() + 1;
-  let data = dat.getDate() < 10 ? "0" + dat.getDate() : dat.getDate();
-  let hour = dat.getHours() < 10 ? "0" + dat.getHours() : dat.getHours();
-  let min = dat.getMinutes() < 10 ? "0" + dat.getMinutes() : dat.getMinutes();
-  let seon = dat.getSeconds() < 10 ? "0" + dat.getSeconds() : dat.getSeconds();
 
-  let newDate =
-    year + "-" + mon + "-" + data + " " + hour + ":" + min + ":" + seon;
-  return newDate;
-};
 
 // 使用&：包含各种属性，或者将各种属性都写在一起，防止报各种错
 type ReqDataType = {
@@ -296,15 +286,49 @@ const listenerMouseClick = () => {
   if (!selText) {
     showIconDialog(false)
   }
+
+  // 点击时，监听路由变化
+  const isUrlChange = currentUrf.value !== location.href;
+  if (isUrlChange) {
+    listenerUrlChange()
+  }
+}
+
+const listenerUrlChange = (e?: HashChangeEvent | PopStateEvent) => {
+  currentUrf.value = location.href;
+  console.log(e, "listenerUrlChange")
+  const iconEle = document.querySelector("link[rel='icon']")
+  let iconUrl = ""
+  if (iconEle) {
+    iconUrl = iconEle.getAttribute('href') || ''
+  } else {
+    iconUrl = "/favicon.ico"
+  }
+  const pageInfo = {
+    url: location.href,
+    title: document.title,
+    origin: location.origin,
+    iconUrl: iconUrl,
+    time: formatDate(new Date(), 'time'),
+    date: formatDate(new Date(), 'date'),
+  }
+  console.log(pageInfo, "pageInfo")
+  window.postMessage({
+    type: 'req:history',
+    data: pageInfo
+  })
 }
 
 onBeforeUnmount(() => {
   removeEventListener("mouseup", getData);
   removeEventListener("message", getWordDesc);
   removeEventListener('click', listenerMouseClick)
+  addEventListener('hashchange', listenerUrlChange)
+  addEventListener('popstate', listenerUrlChange)
 });
 
 onMounted(() => {
+  listenerUrlChange()
   window.postMessage(
     {
       type: "req:storage",
@@ -318,6 +342,8 @@ onMounted(() => {
   addEventListener("mouseup", getData);
   addEventListener("message", getWordDesc);
   addEventListener('click', listenerMouseClick)
+  addEventListener('hashchange', listenerUrlChange)
+  addEventListener('popstate', listenerUrlChange)
 });
 </script>
 

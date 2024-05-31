@@ -1,13 +1,8 @@
 <script setup lang="ts">
 import TestPopup from '@/components/TestPopup.vue'
-import MySvg from '@/content/assets/360wallpaper.jpg'
-import { ref } from 'vue'
-
-const sbg = ref(MySvg)
 </script>
 
 <template>
-  <el-image :src="sbg"/>
   <TestPopup msg="test-popup"/>
 </template>
 

@@ -1,21 +1,24 @@
 
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/Home.vue'
-import About from '../views/About.vue'
-import SelectWordPanel from '../views/SelectWordPanel.vue'
 
 export const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Home,
+    component: () => import('../views/home/Index.vue'),
     label: '首页'
   },
   {
     path: '/SelectWordPanel',
     name: 'SelectWordPanel',
-    component: SelectWordPanel,
+    component: () => import('../views/SelectWordPanel.vue'),
     label: '词表板'
+  },
+  {
+    path: '/history',
+    name: 'history',
+    component: () => import('../views/history/Index.vue'),
+    label: '历史记录'
   },
   {
     path: '/setting',
@@ -26,7 +29,7 @@ export const routes = [
   {
     path: '/about',
     name: 'About',
-    component: About,
+    component: () => import('../views/About.vue'),
     label: '关于'
   }
 ]

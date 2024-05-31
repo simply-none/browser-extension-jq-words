@@ -6,7 +6,7 @@ import vue from '@vitejs/plugin-vue'
 import webExtension from '@samrum/vite-plugin-web-extension'
 import ElementPlus from 'unplugin-element-plus/vite'
 import {visualizer} from 'rollup-plugin-visualizer'
-import viteCompression from 'vite-plugin-compression';
+// import viteCompression from 'vite-plugin-compression';
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
@@ -41,7 +41,7 @@ let config: UserConfig = {
     visualizer({
       // open: true
     }),
-    viteCompression(),
+    // viteCompression(),
     AutoImport({
       resolvers: [ElementPlusResolver()],
     }),

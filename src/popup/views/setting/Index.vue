@@ -17,10 +17,11 @@
 </template>
 
 <script lang="ts" setup>
+import { getDictTypes } from '@/utils/common';
 import { onMounted, ref, watch, unref, toRaw, toValue, onUnmounted } from 'vue'
 
 const selectWordTypes = ref(['bing'])
-const wordTypes: DictType[] = ['bing', 'youdao', 'collins', 'jinshan', 'longman', 'cambridge', 'webster', 'oxford', 'vocabulary', 'wordreference', 'haici']
+const wordTypes: DictType[] = getDictTypes()
 
 const showChangeTypesBtn = ref(false)
 
@@ -46,14 +47,14 @@ const changeWordTypes = (): void => {
   // popupConnectToContentScript(data)
 }
 
-const getMessage = (ev: { data: ReqData<ReqDataType> }) => {
+const getMessage = (ev: { data: ReqData<ReqDataType>, type: string }) => {
   console.log(ev, 'getmessage')
-  if (!ev.data.type) {
+  if (!ev.type) {
     return false
   }
   console.log(ev, 'settting index getmessage')
 
-  if (ev.data.type === 'info:get-select-dictTypes') {
+  if (ev.type === 'info:get-select-dictTypes') {
     console.log(ev.data, 'info:get-select-dictTypes', '获取获取')
     let storage = ev.data.data.storage
     if (!storage) {

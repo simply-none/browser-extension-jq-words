@@ -2,14 +2,10 @@ import {
   listenMultiMsg,
 } from './sendMsg'
 
-import {
-  listenStorageReq,
-  setWordStorage,
-} from './storage'
-
 import type {
   ReqData,
 } from './sendMsg'
+import { getLocalStorage, setLocalStorage } from '@/utils/storage'
 
 chrome.runtime.onInstalled.addListener(async () => {
   // 打开新标签页
@@ -39,52 +35,46 @@ chrome.runtime.onConnect.addListener(function (port) {
     console.log('侦听 in main', msg)
     if (msg.type === 'req:popup2main-get-storage') {
 
-      await chrome.storage.local.get(msg.data.storage)
-
       let selectWordTypes: DictType[] = []
-      const initStorageCache = chrome.storage.local.get().then(items => {
-        const fetchWordTypes = items[msg.data.storage]
-        if (fetchWordTypes) {
-          selectWordTypes = JSON.parse(fetchWordTypes)
+      // 获取所有缓存
+      const items = await getLocalStorage()
+      const fetchWordTypes = items[msg.data.storage]
+      if (fetchWordTypes) {
+        selectWordTypes = JSON.parse(fetchWordTypes)
+      }
+      console.log(selectWordTypes, '获取成功否')
+      port.postMessage({
+        type: 'info:get-select-dictTypes',
+        data: {
+          data: {
+            storage: JSON.stringify(selectWordTypes)
+          }
         }
       })
-      try {
-        await initStorageCache
-        console.log(selectWordTypes, '获取成功否')
-        port.postMessage({
-          type: 'info:get-select-dictTypes',
-          data: {
-            data: {
-              storage: JSON.stringify(selectWordTypes)
-            }
-          }
-        })
-      } catch (error) {
-        console.log(error, '获取错误')
-      }
     }
     if (msg.type === 'req:popup2main-storage') {
-      chrome.storage.local.set({
+      // 此处是缓存：基础设置信息->选择的单词列表
+      setLocalStorage({
         [msg.data.word]: JSON.stringify(msg.data.storage)
-      }).then(value => {
-        console.log(value, '设置成功否')
-        popupConnectToContentScript({
-          type: 'info:get-select-dictTypes',
-          data: {
+      }, {
+        onSuccess() {
+          popupConnectToContentScript({
             type: 'info:get-select-dictTypes',
-            storage: JSON.stringify(msg.data.storage)
-          }
-        })
-      }).catch(e => {
-        console.log('失败否', e)
+            data: {
+              type: 'info:get-select-dictTypes',
+              storage: JSON.stringify(msg.data.storage)
+            }
+          })
+        }
       })
     }
     if (msg.type === 'req:word-desc') {
       listenMultiMsg(port, msg)
     }
-    if (msg.type === 'req:storage') {
-      listenStorageReq(port, msg)
-    }
+    // TODO:error，此处应该没有用到，先注释
+    // if (msg.type === 'req:storage') {
+    //   listenStorageReq(port, msg)
+    // }
     if (msg.type === 'req:openTab') {
       const url = chrome.runtime.getURL(msg.data.url)
       const tab = await chrome.tabs.create({ url: url })

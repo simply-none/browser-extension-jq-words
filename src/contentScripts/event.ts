@@ -1,3 +1,4 @@
+import { getLocalStorage, setLocalStorage } from "@/utils/storage"
 
 window.addEventListener("message", async function (ev) {
   console.log(ev, '监听事件')
@@ -18,7 +19,36 @@ window.addEventListener("message", async function (ev) {
     reqStorage(ev.data)
   }
 
+  if (ev.data.type === 'req:history') {
+    reqHistory(ev.data.data)
+  }
+
 })
+
+interface HistoryData {
+  [index: string]: any
+}
+
+async function reqHistory(data: HistoryData) {
+  const type: StorageType = 'history'
+  console.log(data, '开始缓存历史记录')
+  let storageIndex: string[] = []
+  let storageDate: HistoryData[] = []
+  const items = await getLocalStorage([`${type}:index`, `${type}:${data.date}`])
+  console.log(items, "获取已经存储的历史记录");
+  storageIndex = items[`${type}:index`] || []
+  storageDate = items[`${type}:${data.date}`] || []
+
+  if (!storageIndex.includes(data.date)) {
+    storageIndex.push(data.date)
+  }
+  storageDate.push(data)
+  setLocalStorage({
+    [`${type}:${data.date}`]: storageDate,
+    [`${type}:index`]: storageIndex
+  })
+}
+
 
 async function reqOpenTab(data: { type: string, data: { type: string, url: any } }) {
   const port = chrome.runtime.connect({ name: 'req:openTab--' + data.data.url });
@@ -38,20 +68,17 @@ async function reqOpenTab(data: { type: string, data: { type: string, url: any }
 async function reqStorage(data: { type: string, data: { type: string, storage: any, storageKey: string, word: string } }) {
   console.log(data, '测试')
   if (data.data.type === 'set') {
-    chrome.storage.local.set({ [data.data.word]: JSON.stringify(data.data.storage) }).then(() => {
-      console.log("Value is set");
-    });
+    setLocalStorage(data.data.word, JSON.stringify(data.data.storage))
   }
 
   if (data.data.type === 'get') {
     const storageCache = { count: 0 };
-    await chrome.storage.local.get().then((items) => {
-      console.log(items, "Value is get");
-      Object.keys(items).forEach((key) => {
-        items[key] = JSON.parse(items[key])
-      })
-      Object.assign(storageCache, items);
-    });
+    let items = await getLocalStorage()
+    console.log(items, "Value is get");
+    Object.keys(items).forEach((key) => {
+      items[key] = JSON.parse(items[key])
+    })
+    Object.assign(storageCache, items);
     window.postMessage({
       type: 'info:storage-get',
       data: storageCache
@@ -59,7 +86,11 @@ async function reqStorage(data: { type: string, data: { type: string, storage: a
   }
 
   if (data.data.type === 'get-single') {
-    let storage = await getWordStorage(data.data.storageKey)
+    let storage = null
+    let items = await getLocalStorage(data.data.storageKey)
+    if (items[data.data.storageKey]) {
+      storage = items[data.data.storageKey]
+    }
     window.postMessage({
       type: 'info:get-select-dictTypes',
       data: {
@@ -103,26 +134,6 @@ function reqWordDesc(data: { type: string, data: { word: string, cacheOrigin: Ca
     }
     console.log(msg, 'port disconnect content scripts', Date.now())
   })
-}
-
-async function getWordStorage(storageKey: string) {
-  let wordCache = null
-  const initStorageCache = chrome.storage.local.get(storageKey).then((items) => {
-    console.log(items, '查看是否有缓存')
-
-    if (items[storageKey]) {
-      wordCache = items[storageKey]
-      return true
-    }
-  });
-
-  try {
-    await initStorageCache;
-  } catch (e) {
-    console.log(e)
-  }
-  console.log(storageKey, wordCache, '查看是否有缓存2')
-  return wordCache
 }
 
 // 监听到消息
