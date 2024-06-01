@@ -1,3 +1,4 @@
+// 防抖函数
 export const debounce = (func: Function, delay: number) => {
   let timer: string | number | NodeJS.Timeout | undefined = undefined;
   console.log("start");
@@ -43,6 +44,7 @@ export const computedDialogPosition = (position: DialogPosition, options: Dialog
   return result
 }
 
+// 日期时间格式化
 export const formatDate = (dat: Date, type: 'date' | 'time' | 'dateTime' = 'dateTime') => {
   //获取年月日，时间
   let year = dat.getFullYear();
@@ -80,10 +82,10 @@ export const getDayBeforeCurDay = (gap: number) => {
   return formatDate(dayBefore, 'date')
 }
 
-// 获取前某天到当前日期的日期列表
-export const getBeforeDaysToCurDay = (gap: number) => {
+// 获取前某天到当前日期的日期列表：比如【2024-05-20至2024-06-01】之间的日期
+export const getBeforeDaysToCurDay = (date: Date, gap: number) => {
   const aDayMillisecond = 24 * 60 * 60 * 1000;
-  const cur = Date.now()
+  const cur = date.getTime()
   let dayBefore: string[] = []
   for (let i = gap - 1; i >= 0; i--) {
     dayBefore.push(formatDate(new Date(cur - i * aDayMillisecond), 'date'))
@@ -109,4 +111,71 @@ export const saveJsonFile = (data: object) => {
 // 获取所有的可选的词典类型
 export const getDictTypes = (): DictType[] => {
   return ['bing', 'youdao', 'collins', 'jinshan', 'longman', 'cambridge', 'webster', 'oxford', 'vocabulary', 'wordreference', 'haici']
+}
+
+// 不必拘泥于必须从库中导出相应的类名，既然导不出，那不干脆直接复制一个呢，灵活一点
+type MessageType = '' | 'success' | 'warning' | 'info' | 'error';
+
+// 重要处理前的弹出提示
+export const tipBeforeImportantHandle = ({
+  onSuccess,
+  title = '警告',
+  type = 'error',
+  initTime,
+  Msg,
+}: {
+  onSuccess: Function;
+  title?: string;
+  type?: MessageType;
+  initTime: number;
+  Msg: any;
+}) => {
+  let clearCacheTipTime = initTime
+  let clearCacheTimer: NodeJS.Timeout | string | number | undefined = undefined
+
+  ElMessageBox({
+    title: title,
+    type: type,
+    message: Msg,
+    showCancelButton: true,
+    confirmButtonText: '继续',
+    confirmButtonClass: 'jq-aw--del-all-cache',
+    cancelButtonText: '取消',
+    beforeClose: (action, instance, done) => {
+      if (action === 'confirm') {
+        clearInterval(clearCacheTimer)
+        console.log(clearCacheTipTime, '当前的count')
+        if (clearCacheTipTime <= 0) {
+          done()
+        } else {
+          clearCacheTipTime = initTime
+        }
+        instance.confirmButtonText = `确认(${clearCacheTipTime}s)`
+        instance.confirmButtonClass = 'jq-aw--del-all-cache-disabled'
+
+        clearCacheTimer = setInterval(() => {
+          clearCacheTipTime = clearCacheTipTime - 1
+          instance.confirmButtonText = `确认(${clearCacheTipTime}s)`
+          instance.confirmButtonClass = 'jq-aw--del-all-cache-disabled'
+          if (clearCacheTipTime <= 0) {
+            instance.confirmButtonText = `确认`
+            instance.confirmButtonClass = 'jq-aw--del-all-cache'
+          }
+        }, 1000)
+      } else {
+        done()
+      }
+    },
+  }).then((action) => {
+    console.log('确认成功')
+    clearInterval(clearCacheTimer)
+    clearCacheTipTime = initTime
+    console.log(action)
+    onSuccess()
+
+  }).catch(e => {
+    console.log('取消', e)
+    clearCacheTipTime = initTime
+    clearInterval(clearCacheTimer)
+  })
 }

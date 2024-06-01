@@ -16,6 +16,7 @@
 </template>
 
 <script setup lang="ts">
+import { ElButton } from 'element-plus';
 
 interface Props {
   title: string;

@@ -387,7 +387,7 @@ const webster: WordDOMProps = {
   existSelector: '.entry-word-section-container',
   cache: {
     trans: ['.sb-entry > .sense .sense-content', '.sb-entry > .pseq.no-subnum'],
-    phonetic: ['.prons-entries-list-inline'],
+    phonetic: ['.prons-entries-list-inline', '.prons-entries-list'],
     morph: ['.mw-grid-table-list'],
   }
 }

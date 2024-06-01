@@ -4,8 +4,8 @@
       <template v-for="([key, type, label]) in formOptions" :key="key">
         <template v-if="type === 'daterange'">
           <el-form-item :label="label">
-            <el-date-picker v-model="formInline[key]" type="daterange" unlink-panels range-separator="至"
-              start-placeholder="Start date" end-placeholder="End date" :shortcuts="shortcuts" />
+            <el-date-picker v-model="formInline[key]" type="daterange" format="YYYY-MM-DD" value-format="YYYY-MM-DD" unlink-panels range-separator="至"
+              start-placeholder="开始日期" end-placeholder="截止日期" :shortcuts="shortcuts" />
           </el-form-item>
         </template>
         <template v-if="type === 'input'">
@@ -15,14 +15,16 @@
         </template>
       </template>
       <el-form-item>
-        <el-button type="primary" @click="onSubmit">查询</el-button>
+        <el-button type="primary" @click="searchWords">查询</el-button>
       </el-form-item>
     </el-form>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { reactive, withDefaults, computed } from 'vue'
+import { getBeforeDaysToCurDay, getDaysBetweenTwoDate } from '@/utils/common';
+import { ref, reactive, withDefaults, computed, watch, toValue, toRaw } from 'vue'
+import { ElForm, ElFormItem, ElDatePicker, ElInput, ElButton } from 'element-plus';
 
 interface FormType {
   formOptions: [string, string, string][]
@@ -33,13 +35,26 @@ const props = withDefaults(defineProps<FormType>(), {
   formOptions: () => [['word', 'input', '单词'], ['date', 'daterange', '日期']]
 })
 
-const formInline = computed(() => {
-  return props.formOptions.reduce((acc, [key, type]) => {
-    type === 'input' && (acc[key] = '')
-    type === 'daterange' && (acc[key] = [])
-    return acc
-  }, {} as { [index: string]: any })
+const emit = defineEmits(['getFormData'])
+
+const formInline1 = computed({
+  get() {
+    return props.formOptions.reduce((acc, [key, type]) => {
+      type === 'input' && (acc[key] = '111')
+      type === 'daterange' && (acc[key] = [])
+      return acc
+    }, {} as { [index: string]: any })
+  },
+  set() { }
 })
+
+const formInline = ref(formInline1.value)
+
+console.log(formInline, 'formInline')
+
+watch(formInline, (val) => {
+  console.log(val, 'val')
+}, { deep: true, immediate: true })
 
 const shortcuts = [
   {
@@ -71,12 +86,17 @@ const shortcuts = [
   },
 ]
 
-const onSubmit = () => {
-  console.log('submit!')
+const searchWords = () => {
+  
+  emit('getFormData', formInline)
+  
 }
 </script>
 
 <style>
+.el-date-editor.el-input, .el-date-editor.el-input__wrapper {
+    width: 226px;
+}
 .demo-form-inline .el-input {
   --el-input-width: 220px;
 }

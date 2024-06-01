@@ -146,7 +146,11 @@ const topHandle = (type: string) => {
   }
 };
 
-const getWords = (word: string, cacheOrigin?: CacheOrigin) => {
+const getWords = (word: string, cacheOrigin: CacheOrigin = {
+  date: formatDate(new Date()),
+  href: '',
+  example: ''
+}) => {
   console.log(word, "selected text");
   let isWord = /^[a-z]+[\-\']?[a-z]*$/i.test(word);
   if (word.length > 30) {
@@ -177,7 +181,6 @@ const debouncedFunction = debounce(getWords, 1000);
 let selectionText = ref("");
 
 const getData = (e: MouseEvent) => {
-  console.log(e, "event mouseup");
   let selection = window.getSelection();
   let originText = selection?.toString() || "";
 
@@ -189,7 +192,7 @@ const getData = (e: MouseEvent) => {
 
   let word = originText.trim();
 
-  console.log(word, selection, "selected text");
+  console.log(word, "selected text");
   let isWord = /^[a-z]+[\-\']?[a-z]*$/i.test(word);
   if (word.length > 30) {
     // 查词字数不可超过20

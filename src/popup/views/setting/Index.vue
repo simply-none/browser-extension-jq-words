@@ -19,6 +19,7 @@
 <script lang="ts" setup>
 import { getDictTypes } from '@/utils/common';
 import { onMounted, ref, watch, unref, toRaw, toValue, onUnmounted } from 'vue'
+import { ElCheckbox, ElCheckboxGroup, ElButton, ElDivider } from 'element-plus';
 
 const selectWordTypes = ref(['bing'])
 const wordTypes: DictType[] = getDictTypes()

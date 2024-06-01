@@ -6,50 +6,11 @@
     </Header>
 
     <div class="jq-aw-body" ref="jqAwBody">
-      <Search />
+      <Search :form-options="[['date', 'daterange', '日期']]" @getFormData="getFormData" />
       <el-table class="jq-aw-table" :data="table" style="width: 100%" :max-height="tableMaxHeight">
         <el-table-column type="expand" label="">
           <template #default="{ row }">
-            <div class="wordlist-item">
-              <div class="wordlist-item-title">origin: </div>
-              <div class="wordlist-item" v-for="origin in row.origin" :key="origin">
-                <div v-if="origin">
-                  <div class="wordlist-item-content">
-                    href: {{ origin.href }}
-                  </div>
-                  <div class="wordlist-item-content">
-                    date: {{ origin.date }}
-                  </div>
-                  <div class="wordlist-item-content">
-                    example: {{ origin.example }}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="wordlist-item">
-              <div class="wordlist-item-title">phonetic: </div>
-              <div class="wordlist-item-content" v-for="phonetic in row.phonetic" :key="phonetic">
-                <div v-if="phonetic">
-                  {{ phonetic }}</div>
-              </div>
-            </div>
-
-            <div class="wordlist-item">
-              <div class="wordlist-title">trans: </div>
-              <div class="wordlist-item-content" v-for="trans in row.trans" :key="trans">
-                <div v-if="trans">
-                  {{ trans }}</div>
-              </div>
-            </div>
-
-            <div class="wordlist-item">
-              <div class="wordlist-item-title">morph: </div>
-              <div class="wordlist-item-content" v-for="morph in row.morph" :key="morph">
-                <div v-if="morph">
-                  {{ morph }}</div>
-              </div>
-            </div>
+            <WordItem :word="row"></WordItem>
 
           </template>
         </el-table-column>
@@ -103,14 +64,16 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, nextTick } from 'vue'
+import { h, onMounted, ref, nextTick, toRaw, toValue } from 'vue'
 import type { Ref } from 'vue'
-import { ElCollapse, ElCollapseItem, ElButton } from 'element-plus';
+import { ElCollapse, ElCollapseItem, ElButton, ElTable, ElTableColumn, ElMessageBox } from 'element-plus';
+import 'element-plus/es/components/message-box/style/css'
 import Search from '@/components/basic/Search.vue'
 import Header from '@/components/basic/Header.vue'
 import Page from '@/components/basic/Page.vue'
+import WordItem from '@/components/basic/WordItem.vue'
 import { getLocalStorage } from '@/utils/storage';
-import { getBeforeDaysToCurDay, getDictTypes, saveJsonFile as saveFile } from '@/utils/common';
+import { getBeforeDaysToCurDay, getDaysBetweenTwoDate, getDictTypes, saveJsonFile as saveFile, tipBeforeImportantHandle } from '@/utils/common';
 
 let storageCache = ref({})
 
@@ -119,8 +82,19 @@ let tableMaxHeight = ref(550)
 let jqAwBody: Ref<HTMLElement | null> = ref(null)
 
 const clearCache = () => {
-  chrome.storage.local.clear().then(res => {
-    console.log(res, '删除所有后提示的内容')
+  tipBeforeImportantHandle({
+    initTime: 180,
+    onSuccess: function () {
+      console.log('进入到确认成功的删除环节函数 ')
+      // chrome.storage.local.clear().then(res => {
+      //   console.log(res, '删除所有后提示的内容')
+      // })
+    },
+    Msg: h('p', null, [
+      h('span', null, '你将'),
+      h('b', { style: 'color: #f56c6c;' }, '【删除】'),
+      h('span', { style: '' }, '所有的个人数据缓存，是否继续？'),
+    ])
   })
 }
 
@@ -139,11 +113,9 @@ let computedTableMaxHeight = async () => {
   // const tableHeight = document.querySelector(".jq-aw")?.clientHeight
 }
 
-onMounted(async () => {
-  computedTableMaxHeight()
-
+const searchWords = async (date: Date = new Date(), gap: number = 7) => {
   // 自动选择七天内查询的单词
-  const daysToCurDay = getBeforeDaysToCurDay(7).map(date => `word-date:${date}`)
+  const daysToCurDay = getBeforeDaysToCurDay(date, gap).map(date => `word-date:${date}`)
 
   let items: { [index: string]: string[] } = await getLocalStorage(daysToCurDay)
   console.log(items, 'items')
@@ -152,11 +124,18 @@ onMounted(async () => {
   Object.values(items).forEach(item => {
     let newItem = item
     let dictTypes = getDictTypes()
-    dictTypes.forEach(type => {
-      item.forEach(word => {
-        newItem.push(`${type}:${word}`)
+    console.log(newItem, dictTypes, 'newItem')
+
+    const itemMap = newItem.map(i => {
+      let ni: string[] = []
+      dictTypes.forEach(type => {
+        ni.push(`${type}:${i}`)
       })
+      return ni
     })
+
+    newItem = itemMap.flat(1)
+
     wordList.push(...newItem)
   })
   wordList = Array.from(new Set(wordList))
@@ -165,6 +144,7 @@ onMounted(async () => {
 
 
   console.log(daysToCurDay, wordDesItems, 'daysToCurDay', wordList)
+  table.value = []
 
   Object.keys(wordDesItems).forEach((key) => {
     delete wordDesItems[key].HTML
@@ -176,10 +156,57 @@ onMounted(async () => {
 
   storageCache.value = wordDesItems;
   console.log(storageCache, "storageCache Value is set");
+}
+
+const getFormData = (formData: AnyTypeObj) => {
+  const parsedFormData = toRaw(toValue(formData))
+  console.log('searchWords!')
+  console.log(parsedFormData, formData.date, formData.word, 'formdata')
+
+  let selDate = !parsedFormData.date || (parsedFormData.date.length === 0) ? [new Date(), new Date()] : parsedFormData.date
+
+  let curDate = new Date()
+  let gap = 7
+  gap = getDaysBetweenTwoDate(selDate[0], selDate[1])
+
+  curDate = (selDate[0] > selDate[1]) ? new Date(selDate[0]) : new Date(selDate[1])
+  console.log(curDate, 'curdate')
+  searchWords(curDate, gap)
+
+}
+
+onMounted(async () => {
+  computedTableMaxHeight()
+  searchWords()
+
 })
 </script>
 
 <style lang="scss" scoped>
+:global(.jq-aw--del-all-cache) {
+  background: #f56c6c;
+  border: #f56c6c;
+}
+
+:global(.jq-aw--del-all-cache:hover) {
+  background-color: #f89898;
+  border-color: #f89898;
+  outline: none;
+}
+
+:global(.jq-aw--del-all-cache-disabled) {
+  background-color: #f89898;
+  border-color: #f89898;
+  outline: none;
+  cursor: not-allowed;
+}
+
+:global(.jq-aw--del-all-cache-disabled:hover) {
+  background-color: #f89898;
+  border-color: #f89898;
+  outline: none;
+}
+
 :deep(.el-table) {
   .el-table__row td.el-table__cell {
     div {
@@ -203,21 +230,6 @@ onMounted(async () => {
 
   &-table {
     height: calc(100% - 88px);
-  }
-}
-
-.wordlist-item {
-  padding: 3px;
-  border: 1px solid grey;
-
-  &-title {
-    font-weight: 600;
-    padding: 3px;
-    font-size: 1.2em;
-  }
-
-  &-content {
-    padding: 3px;
   }
 }
 </style>

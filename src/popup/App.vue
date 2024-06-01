@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
 import { onMounted, computed } from 'vue';
+import { ElConfigProvider } from 'element-plus';
 
 import Layout from './layout/Index.vue'
 

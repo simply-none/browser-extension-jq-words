@@ -17,7 +17,6 @@ const navToSetting = async () => {
     <ElInput v-model="toggleUrl"/>
     <el-button @click="navToSetting">跳转到设置页面</el-button>
   </div>
-  <HelloWorld msg="Vite + Vue" />
 </template>
 
 <style scoped>

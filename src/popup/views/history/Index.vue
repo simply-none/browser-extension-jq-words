@@ -8,46 +8,48 @@
         hIndex: {{ hIndex }}
       </div>
       <hr />
-      <div v-for="(hcItem, value, key) in historyCache" :key="key">
-        <h2>{{ formatHistoryDate(value + '') }}</h2>
-        <template v-if="hcItem && hcItem.length > 0">
-          <div v-for="hc in hcItem" :key="hc && hc.id">
-            <div class="jq-aw-item__inner" @click="openNewTab(hc.url)">
-              <div class="jq-aw-item__inner--left">
+      <div class="jq-browser-history">
+        <div v-for="(hcItem, value, key) in historyCache" :key="key">
+          <h2>{{ formatHistoryDate(value + '') }}</h2>
+          <template v-if="hcItem && hcItem.length > 0">
+            <div v-for="hc in hcItem" :key="hc && hc.id">
+              <div class="jq-aw-item__inner" @click="openNewTab(hc.url)">
+                <div class="jq-aw-item__inner--left">
 
-                <el-checkbox v-model="hc.checked" @click.stop="checkedHistory"></el-checkbox>
-                <el-image :src="parseIconUrl(hc.origin, hc.iconUrl)">
-                  <template #error>
-                    <div class="image-slot">
-                      <el-icon><icon-picture /></el-icon>
-                    </div>
-                  </template>
-                </el-image>
-                <div class="jq-aw-item__item">{{ hc.title }}</div>
+                  <el-checkbox v-model="hc.checked" @click.stop="checkedHistory"></el-checkbox>
+                  <el-image :src="parseIconUrl(hc.origin, hc.iconUrl)">
+                    <template #error>
+                      <div class="image-slot">
+                        <el-icon><icon-picture /></el-icon>
+                      </div>
+                    </template>
+                  </el-image>
+                  <div class="jq-aw-item__item">{{ hc.title }}</div>
 
-                <div class="jq-aw-item__item">{{ hc.origin }}</div>
-              </div>
-              <div class="jq-aw-item__inner--right">
-                <div>{{ hc.time }}</div>
-                <div @click.stop="deletedHistory">
-                  <el-icon>
-                    <Close />
-                  </el-icon>
+                  <div class="jq-aw-item__item">{{ hc.origin }}</div>
+                </div>
+                <div class="jq-aw-item__inner--right">
+                  <div>{{ hc.time }}</div>
+                  <div @click.stop="deletedHistory">
+                    <el-icon>
+                      <Close />
+                    </el-icon>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </template>
+          </template>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, nextTick, computed } from 'vue'
+import { onMounted, ref, nextTick, computed, toRaw, toValue } from 'vue'
 import { Picture as IconPicture, Close } from '@element-plus/icons-vue'
 import type { Ref } from 'vue'
-import { ElCollapse, ElCollapseItem, ElButton } from 'element-plus';
+import { ElCheckbox, ElIcon, ElImage } from 'element-plus';
 import Header from '@/components/basic/Header.vue'
 import MockData from './data.ts'
 import { getLocalStorage } from '@/utils/storage.ts';
@@ -96,8 +98,9 @@ const openNewTab = (url: string) => {
 }
 
 onMounted(async () => {
-  historyIndexCache.value = await getLocalCache<string[]>(type + ':index') || []
-  console.log(historyIndexCache.value, 'historyIndexCache')
+  let items: AnyTypeObj = await getLocalCache<string[]>(type + ':index') || {}
+  historyIndexCache.value = items[type + ':index']
+  console.log(historyIndexCache.value, 'historyIndexCache', toRaw(historyIndexCache.value), toValue(historyIndexCache.value))
 
   const parsedHistoryIndexCache = historyIndexCache.value.map(index => type + ':' + index)
 
@@ -107,6 +110,11 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
+.jq-browser-history {
+  height: calc(100% - 30px);
+  overflow: auto;
+}
+
 .jq-aw-item__inner {
   display: flex;
   flex-flow: row nowrap;
@@ -148,8 +156,6 @@ onMounted(async () => {
 
 .jq-aw-item__item {
   width: 40%;
-  /* overflow: hidden; */
-  /* text-emphasis: none; */
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;

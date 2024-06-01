@@ -14,6 +14,7 @@
 import OpenNewWindow from './about/openNewWindow.vue';
 // import htmlstr from './cheerio-test.html?raw'
 import { onMounted, ref, nextTick } from 'vue';
+import { ElButton } from 'element-plus';
 
 const height = ref('0')
 const iheight = ref('auto')

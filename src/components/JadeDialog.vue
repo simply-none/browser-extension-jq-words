@@ -20,9 +20,7 @@
 <script lang="ts" setup>
 import { onMounted, ref, onBeforeUnmount, computed, watch, reactive, nextTick } from 'vue'
 import { computedDialogPosition } from '@/utils/common';
-import {
-  ElDialog,
-} from 'element-plus'
+import { ElDialog } from 'element-plus'
 
 const props = defineProps<{
   id: number,
