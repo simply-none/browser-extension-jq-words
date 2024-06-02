@@ -6,7 +6,7 @@
     </Header>
 
     <div class="jq-aw-body" ref="jqAwBody">
-      <Search :form-options="[['date', 'daterange', '日期']]" @getFormData="getFormData" />
+      <Search :form-options="[['date', 'daterange', '日期'], ['origin', 'select', '词源']]" :options="searchOptions" @getFormData="getFormData" />
       <el-table class="jq-aw-table" :data="table" style="width: 100%" :max-height="tableMaxHeight">
         <el-table-column type="expand" label="">
           <template #default="{ row }">
@@ -81,6 +81,10 @@ let tableMaxHeight = ref(550)
 
 let jqAwBody: Ref<HTMLElement | null> = ref(null)
 
+let searchOptions = {
+  origin: getDictTypes()
+}
+
 const clearCache = () => {
   tipBeforeImportantHandle({
     initTime: 180,
@@ -99,8 +103,20 @@ const clearCache = () => {
 }
 
 const deleteItem = (key: string) => {
-  chrome.storage.local.remove(key).then(res => {
-    console.log(res, '删除后提示的内容')
+  const [type, word] = key.split(':')
+  tipBeforeImportantHandle({
+    initTime: 3,
+    onSuccess: function () {
+      console.log('进入到确认成功的删除环节函数 ')
+      chrome.storage.local.remove(key).then(res => {
+        console.log(res, '删除后提示的内容')
+      })
+    },
+    Msg: h('p', null, [
+      h('span', null, '你将'),
+      h('b', { style: 'color: #f56c6c;' }, '【删除】'),
+      h('span', { style: '' }, `词源${type}中的单词${word}数据缓存，是否继续？`),
+    ])
   })
 }
 
@@ -113,7 +129,7 @@ let computedTableMaxHeight = async () => {
   // const tableHeight = document.querySelector(".jq-aw")?.clientHeight
 }
 
-const searchWords = async (date: Date = new Date(), gap: number = 7) => {
+const searchWords = async (date: Date = new Date(), gap: number = 7, selectDictType: DictType[] = getDictTypes()) => {
   // 自动选择七天内查询的单词
   const daysToCurDay = getBeforeDaysToCurDay(date, gap).map(date => `word-date:${date}`)
 
@@ -123,7 +139,7 @@ const searchWords = async (date: Date = new Date(), gap: number = 7) => {
   let wordList: string[] = []
   Object.values(items).forEach(item => {
     let newItem = item
-    let dictTypes = getDictTypes()
+    let dictTypes = selectDictType
     console.log(newItem, dictTypes, 'newItem')
 
     const itemMap = newItem.map(i => {
@@ -171,7 +187,7 @@ const getFormData = (formData: AnyTypeObj) => {
 
   curDate = (selDate[0] > selDate[1]) ? new Date(selDate[0]) : new Date(selDate[1])
   console.log(curDate, 'curdate')
-  searchWords(curDate, gap)
+  searchWords(curDate, gap, parsedFormData.origin)
 
 }
 

@@ -1,6 +1,8 @@
 <template>
   <div>
     这是about
+    <el-input v-model="name"></el-input>
+    <el-button @click="gotoName">跳转到{{ name }}</el-button>
     <el-button @click="setHeight">设置高度</el-button>
     <div id="jous">
       <iframe ref="iref" :srcdoc="srcdoc" width="100%" :height="height"></iframe>
@@ -11,14 +13,26 @@
 </template>
 
 <script lang="ts" setup>
-import OpenNewWindow from './about/openNewWindow.vue';
+import OpenNewWindow from './openNewWindow.vue';
 // import htmlstr from './cheerio-test.html?raw'
 import { onMounted, ref, nextTick } from 'vue';
 import { ElButton } from 'element-plus';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const height = ref('0')
 const iheight = ref('auto')
 const iref = ref()
+
+const name = ref('')
+
+const gotoName = () => {
+  if (name.value === '') return false
+  router.push({
+    name: name.value,
+  })
+}
 
 onMounted(async () => {
   await nextTick()

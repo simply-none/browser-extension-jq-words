@@ -13,6 +13,9 @@
       <el-button v-if="showChangeTypesBtn" @click="changeCancel">取消</el-button>
     </div>
     <el-divider />
+    <div>
+      <el-button @click="gotoHome">返回主页面</el-button>
+    </div>
   </div>
 </template>
 
@@ -20,11 +23,20 @@
 import { getDictTypes } from '@/utils/common';
 import { onMounted, ref, watch, unref, toRaw, toValue, onUnmounted } from 'vue'
 import { ElCheckbox, ElCheckboxGroup, ElButton, ElDivider } from 'element-plus';
+import { useRouter } from 'vue-router';
+
+const router = useRouter()
 
 const selectWordTypes = ref(['bing'])
 const wordTypes: DictType[] = getDictTypes()
 
 const showChangeTypesBtn = ref(false)
+
+const gotoHome = () => {
+  router.push({
+    name: 'Home'
+  })
+}
 
 watch(() => selectWordTypes.value, () => {
   showChangeTypesBtn.value = true

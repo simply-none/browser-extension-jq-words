@@ -156,8 +156,8 @@ const topHandle = (type: string) => {
 
 const getWords = (word: string, cacheOrigin: CacheOrigin = {
   date: formatDate(new Date()),
-  href: '',
-  example: ''
+  href: location.href,
+  example: '查词面板单独查词'
 }) => {
   console.log(word, "selected text");
   let isWord = /^[a-z]+[\-\']?[a-z]*$/i.test(word);

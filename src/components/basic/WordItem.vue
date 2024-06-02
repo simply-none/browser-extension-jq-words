@@ -4,7 +4,7 @@
     <div class="jq-word-item-header">
       <div class="jq-word-item-header-left">
         <div class="jq-word-item-type">
-          {{ word.wordType.split(':')[0] }}
+          {{ word.wordType?.split(':')[0] }}
         </div>
         <div class="jq-word-item-word">
           {{ word.word }}
@@ -109,7 +109,7 @@ const props = withDefaults(defineProps<Props>(), {
   &-type {
     border: 1px solid #939393;
     background: #656565;
-    border-radius: 6px;
+    border-radius: 3px;
     padding: 3px 3px;
     color: #fff;
     font-size: 0.75em;

@@ -1,7 +1,8 @@
 
+import { children } from 'node_modules/cheerio/lib/api/traversing'
 import { createRouter, createWebHistory } from 'vue-router'
 
-export const routes = [
+export const menuRoutes = [
   {
     path: '/',
     name: 'Home',
@@ -29,9 +30,37 @@ export const routes = [
   {
     path: '/about',
     name: 'About',
-    component: () => import('../views/About.vue'),
+    component: () => import('../views/about/Index.vue'),
     label: '关于'
   }
+]
+
+export const routes = [
+  {
+    component: () => import('../layout/Index.vue'),
+    path: '/',
+    children: menuRoutes
+  },
+
+  {
+    path: '/noLayout',
+    name: 'noLayout-setting',
+    component: () => import('../views/setting/Index.vue'),
+    meta: {
+      noLayout: true
+    },
+    label: '关于-无layout'
+  },
+  {
+    path: '/learn',
+    name: 'learn',
+    component: () => import('../views/learn/Index.vue'),
+    meta: {
+      noLayout: true
+    },
+    label: '背单词'
+  },
+
 ]
 
 const router = createRouter({

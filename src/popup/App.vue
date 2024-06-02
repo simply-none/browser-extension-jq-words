@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
-import { onMounted, computed } from 'vue';
+import { onMounted, computed, watch, ref } from 'vue';
 import { ElConfigProvider } from 'element-plus';
 
 import Layout from './layout/Index.vue'
@@ -14,26 +14,22 @@ const router = useRouter()
 
 onMounted(() => {
   console.log(route, route.query, 'route')
-
-  if (route.query.name) {
-    console.log('跳转啊')
-    router.push({
-      name: route.query.name as string
-    })
-  }
+  console.log(import.meta.env, 'import.meta')
+  const name = route.query.name as string || (import.meta.env.DEV ? 'learn' : 'noLayout-setting')
+  console.log('跳转啊')
+  name && router.push({
+    name: name
+  })
 })
 
 </script>
 
 <template>
   <el-config-provider :locale="locale">
-    <Layout>
-      <template #main>
-        <router-view />
-      </template>
-    </Layout>
+    <router-view v-slot="{ Component }">
+      <component :is="Component" />
+    </router-view>
   </el-config-provider>
-
 </template>
 
 <style lang="scss" scoped></style>

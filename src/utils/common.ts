@@ -93,6 +93,18 @@ export const getBeforeDaysToCurDay = (date: Date, gap: number) => {
   return dayBefore
 }
 
+export const getDatesByMonth = (year: number, month: number) => {
+  const parseDate = new Date(year, month, 0)
+  console.log(parseDate, 'parseDate')
+  const date = parseDate.getDate()
+  let dateList = []
+  for (let i = 1; i <= date; i++) {
+    dateList.push(formatDate(new Date(`${year}-${month}-${i}`), 'date'))
+  }
+  console.log(dateList)
+  return dateList
+}
+
 export const saveJsonFile = (data: object) => {
   // 创建Blob对象
   const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
