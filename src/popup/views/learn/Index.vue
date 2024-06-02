@@ -38,8 +38,8 @@
           </div>
           <div class="jq-learn-wordType-wrapper">
             <div
-              :class="['jq-learn-wordType-item', originItem === selectWordType ? 'jq-learn-wordType-item-select' : '']"
-              v-for="originItem in originWordType" :key="originItem" :index="originItem"
+              :class="['jq-learn-wordType-item', originItem === selectWordType ? 'jq-learn-wordType-item-select' : '', originItem === autoSelectWordType ? 'jq-learn-wordType-item-autoSelect' : '', originWordType.includes(originItem) ? '' : 'jq-learn-wordType-item-inactive']"
+              v-for="originItem in fullyOriginWordType" :key="originItem" :index="originItem"
               @click="toggleOrigin(originItem)">
               <span>{{ originItem?.split(':')[0] }}</span>
             </div>
@@ -82,11 +82,13 @@ const selectMonth = ref(year + '-' + month)
 const selectDate = ref('')
 const selectWord = ref('')
 const selectWordType = ref('')
+const autoSelectWordType = ref('')
 
 let dateList: Ref<string[]> = ref([])
 let wordList: Ref<string[]> = ref([])
 let originWordList: Ref<AnyTypeObj[]> = ref([])
 let originWordType: Ref<string[]> = ref([])
+let fullyOriginWordType: Ref<string[]> = ref([])
 let currentWord: Ref<WordProps> = ref({}) as Ref<WordProps>
 
 watch(selectMonth, (v) => {
@@ -134,8 +136,15 @@ const getOriginWordByWord = async (word: string) => {
   return parseOriginWordList
 }
 
-const toggleOrigin = (originItem: string) => {
-  selectWordType.value = originItem
+const toggleOrigin = (originItem: string, auto: boolean = false) => {
+  console.log(selectWordType.value, autoSelectWordType.value, 'selectWordType自动选择开始')
+  if (!auto) {
+    selectWordType.value = originItem
+    autoSelectWordType.value = ''
+  } else {
+    autoSelectWordType.value = originItem
+  }
+  console.log(selectWordType.value, autoSelectWordType.value, 'selectWordType自动选择')
   currentWord.value = originWordList.value.find(item => item.wordType === originItem) as WordProps
 }
 
@@ -144,12 +153,25 @@ const toggleWord = async (word: string) => {
   originWordList.value = await getOriginWordByWord(word)
   console.log(originWordList.value, 'originWordList')
 
-  originWordType.value = originWordList.value.map(item => item.wordType)
+  originWordType.value = originWordList.value.map(item => {
+    if (!selectWordType.value) {
+      selectWordType.value = item.wordType
+    } else {
+      const lateSelType = selectWordType.value.split(':')[0]
+      const iWord = item.wordType.split(':')[1]
+      selectWordType.value = lateSelType + ':' + iWord
+    }
+
+    return item.wordType
+  })
+  fullyOriginWordType.value = getDictTypes().map(item => item + ':' + word)
 
   if (originWordType.value.length === 0) {
     return true
   }
-  toggleOrigin(originWordType.value[0])
+
+  const isSelectType = originWordType.value.find(type => type === selectWordType.value)
+  toggleOrigin(isSelectType ? selectWordType.value : originWordType.value[0], isSelectType ? false : true)
 }
 
 const toggleDate = async (date: string) => {
@@ -225,14 +247,19 @@ onMounted(async () => {
       border-radius: 3px;
 
       &-select {
+        font-weight: 900;
+      }
+
+      &-autoSelect {
         background: #5c63d0;
-        color: white;
+        color: #fff;
         border: #5c63d0;
       }
+
       &-inactive {
-            color: #a5a5a5;
-    background: #e4e4e4;
-    border-color: #e4e4e4;
+        color: #a5a5a5;
+        background: #e4e4e4;
+        border-color: #e4e4e4;
       }
     }
   }

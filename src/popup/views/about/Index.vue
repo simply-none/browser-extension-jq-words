@@ -25,7 +25,7 @@ const height = ref('0')
 const iheight = ref('auto')
 const iref = ref()
 
-const name = ref('')
+const name = ref('learn')
 
 const gotoName = () => {
   if (name.value === '') return false
