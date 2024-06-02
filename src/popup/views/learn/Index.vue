@@ -12,10 +12,10 @@
         <div class="jq-learn-date-label">
           日期：
         </div>
-        <div class="jq-learn-date-wrapper">
+        <div class="jq-learn-date-wrapper" @wheel="e => { xScroll(e, scrollDateEle) }" ref="scrollDateEle">
           <div :class="['jq-learn-date-item', dateItem === selectDate ? 'jq-learn-date-item-select' : '']"
             v-for="dateItem in dateList" :key="dateItem" @click="toggleDate(dateItem)">
-            <span>{{ dateItem }}</span>
+            <span class="jq-learn-date-item-inner">{{ dateItem }}</span>
           </div>
         </div>
       </div>
@@ -36,7 +36,7 @@
           <div class="jq-learn-wordType-label">
             词源：
           </div>
-          <div class="jq-learn-wordType-wrapper">
+          <div class="jq-learn-wordType-wrapper" @wheel="e => { xScroll(e, scrollTypeEle) }" ref="scrollTypeEle">
             <div
               :class="['jq-learn-wordType-item', originItem === selectWordType ? 'jq-learn-wordType-item-select' : '', originItem === autoSelectWordType ? 'jq-learn-wordType-item-autoSelect' : '', originWordType.includes(originItem) ? '' : 'jq-learn-wordType-item-inactive']"
               v-for="originItem in fullyOriginWordType" :key="originItem" :index="originItem"
@@ -84,6 +84,9 @@ const selectWord = ref('')
 const selectWordType = ref('')
 const autoSelectWordType = ref('')
 
+let scrollDateEle: Ref<Element | null> = ref(null)
+let scrollTypeEle: Ref<Element | null> = ref(null)
+
 let dateList: Ref<string[]> = ref([])
 let wordList: Ref<string[]> = ref([])
 let originWordList: Ref<AnyTypeObj[]> = ref([])
@@ -96,6 +99,11 @@ watch(selectMonth, (v) => {
   toggleMonth()
 })
 
+const xScroll = (e: WheelEvent, scrollRef: Element | null) => {
+  if (scrollRef) {
+    scrollRef.scrollLeft += e.deltaY
+  }
+}
 
 const getSearchWordDate = async () => {
   console.log(selectMonth, 'selectMonth')
@@ -237,6 +245,16 @@ onMounted(async () => {
       display: flex;
       align-items: center;
       gap: 6px;
+      padding: 3px;
+
+      &::-webkit-scrollbar {
+        height: 3px;
+      }
+
+      /*鼠标悬浮在该类指向的控件上时滑块的样式*/
+      &::-webkit-scrollbar-thumb {
+        background-color: #dedede;
+      }
     }
 
     &-item {
@@ -245,6 +263,11 @@ onMounted(async () => {
       background: #a3a9ff;
       padding: 3px;
       border-radius: 3px;
+
+      &-inner {
+        display: inline-block;
+        width: 96px;
+      }
 
       &-select {
         font-weight: 900;
