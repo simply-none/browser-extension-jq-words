@@ -26,6 +26,7 @@ import {
   ref,
   reactive,
   computed,
+  toValue,
 } from "vue";
 
 import type { Ref } from "vue";
@@ -37,22 +38,7 @@ const contentStore = useContentStore()
 const { showSearchDialog, showIconDialog } = contentStore
 const { iconDialogVisible, searchDialogVisible } = storeToRefs(contentStore)
 
-let timer: Ref<NodeJS.Timeout | string | number | undefined> = ref(undefined);
 
-const mouseOverFn = (e: MouseEvent) => {
-  console.log(e, '鼠标hoverr')
-  clearTimeout(timer.value)
-  timer.value = setTimeout(() => {
-    showSearchDialog(true)
-    showIconDialog(false)
-    console.log('打开弹窗')
-  }, 300)
-}
-
-const mouseLeaveFn = (e: MouseEvent) => {
-  console.log(e, '鼠标离开')
-  clearTimeout(timer.value)
-}
 
 defineProps<{ msg: string }>();
 
@@ -121,6 +107,28 @@ watch(
   }
 );
 
+let selectionText = ref("");
+
+let cacheOrigin: Ref<CacheOrigin> = ref({}) as Ref<CacheOrigin>
+
+let timer: Ref<NodeJS.Timeout | string | number | undefined> = ref(undefined);
+
+const mouseOverFn = (e: MouseEvent) => {
+  console.log(e, '鼠标hoverr')
+  clearTimeout(timer.value)
+  timer.value = setTimeout(() => {
+    showSearchDialog(true)
+    showIconDialog(false)
+    console.log('打开弹窗')
+    debouncedFunction(selectionText.value, toRaw(toValue(cacheOrigin)));
+  }, 300)
+}
+
+const mouseLeaveFn = (e: MouseEvent) => {
+  console.log(e, '鼠标离开')
+  clearTimeout(timer.value)
+}
+
 const topHandle = (type: string) => {
   if (type === "storage") {
     window.postMessage(
@@ -178,7 +186,6 @@ const getWords = (word: string, cacheOrigin: CacheOrigin = {
 
 // 使用防抖函数
 const debouncedFunction = debounce(getWords, 1000);
-let selectionText = ref("");
 
 const getData = (e: MouseEvent) => {
   let selection = window.getSelection();
@@ -188,7 +195,7 @@ const getData = (e: MouseEvent) => {
     return false;
   }
 
-  selectionText.value = originText || "";
+  selectionText.value = originText.trim() || "";
 
   let word = originText.trim();
 
@@ -209,18 +216,22 @@ const getData = (e: MouseEvent) => {
     // 打开弹窗
     // showSearchDialog(true)
 
+    cacheOrigin.value = {
+      date: formatDate(new Date()),
+      href: location.href,
+      example: (e.target as unknown as HTMLElement).innerText,
+    }
+
     // 判断是否已经打开了查询单词的窗口，如果打开了，则：
     // icon弹窗不展示，否则先关闭，再展示
     if (!searchDialogVisible.value) {
       showIconDialog(false)
       showIconDialog(true)
+
+      return false;
     }
 
-    debouncedFunction(word, {
-      date: formatDate(new Date()),
-      href: location.href,
-      example: (e.target as unknown as HTMLElement).innerText,
-    });
+    debouncedFunction(word, toRaw(toValue(cacheOrigin)));
   }
 };
 
