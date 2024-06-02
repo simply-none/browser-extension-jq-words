@@ -421,7 +421,7 @@ const oxford: WordDOMProps = {
     'script:not([src])',
     'style'
   ],
-  existSelector: '.senses_multiple',
+  existSelector: '.phonetics',
   cache: {
     trans: ['.sense**.grammar**.def'],
     phonetic: ['.phon'],

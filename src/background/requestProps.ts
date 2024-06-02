@@ -28,7 +28,7 @@ const request: Record<DictType, RequestProps> = {
     headers: {},
   },
   oxford: {
-    url: `https://www.oxfordlearnersdictionaries.com/definition/english/wordHolder_1`,
+    url: `https://www.oxfordlearnersdictionaries.com/search/english/?q=wordHolder`,
     host: 'https://www.oxfordlearnersdictionaries.com',
     headers: {},
   },

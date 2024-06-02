@@ -111,6 +111,14 @@ function parsedWordDOM(type: DictType, html: string) {
 
 export async function cacheWord(word: string, type: DictType, html: string, cacheOrigin: CacheOrigin) {
   const ele = cheerio.load(html);
+
+  const isExistWord = ele(wordDOMProps[type].existSelector)
+  console.log(wordDOMProps[type], isExistWord, '是否存在需要存储的标志？')
+
+  // 不缓存单词
+  if (isExistWord.length === 0) {
+    return true
+  }
   // TODO：应当保存之前，先获取之前该word保存的内容，然后进行更新操作
   let wordCache: WordCache = {
     word: '',
