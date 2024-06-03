@@ -1,3 +1,6 @@
+import { ElMessageBox } from 'element-plus';
+import type {MessageBoxState, Action} from 'element-plus/es/components/message-box';
+import 'element-plus/es/components/message-box/style/css'
 // 防抖函数
 export const debounce = (func: Function, delay: number) => {
   let timer: string | number | NodeJS.Timeout | undefined = undefined;
@@ -153,7 +156,7 @@ export const tipBeforeImportantHandle = ({
     confirmButtonText: '继续',
     confirmButtonClass: 'jq-aw--del-all-cache',
     cancelButtonText: '取消',
-    beforeClose: (action, instance, done) => {
+    beforeClose: (action: Action, instance: MessageBoxState, done: () => void) => {
       if (action === 'confirm') {
         clearInterval(clearCacheTimer)
         console.log(clearCacheTipTime, '当前的count')
@@ -178,14 +181,14 @@ export const tipBeforeImportantHandle = ({
         done()
       }
     },
-  }).then((action) => {
+  }).then((action: Action) => {
     console.log('确认成功')
     clearInterval(clearCacheTimer)
     clearCacheTipTime = initTime
     console.log(action)
     onSuccess()
 
-  }).catch(e => {
+  }).catch((e: Error) => {
     console.log('取消', e)
     clearCacheTipTime = initTime
     clearInterval(clearCacheTimer)
