@@ -3,6 +3,7 @@ import requestProps from './requestProps';
 import { cacheWord, parsedWordDOM } from './pasedWordDOM';
 import { getLocalStorage, setLocalStorage } from '@/utils/storage';
 import { formatDate } from '@/utils/common';
+import { useragentsPrefix } from './getUserAgent';
 interface ReqData<T> {
   type: 'error' | `info:${string}` | `req:${string}`;
   data: T;
@@ -101,12 +102,32 @@ function getSingleWordByType (word: string, type: DictType, port: chrome.runtime
   
 }
 
+async function getUserAgent() {
+  const items = await getLocalStorage(useragentsPrefix + 'index')
+  let userAgentsDate = items[useragentsPrefix + 'index'] as string[] || []
+  userAgentsDate.sort((a, b) => {
+    // 最近的排在前面
+    if (a < b) return 1
+    return -1
+  })
+
+  let useragentItems = await getLocalStorage(useragentsPrefix + userAgentsDate[0])
+  let useragent = useragentItems[useragentsPrefix + userAgentsDate[0]] as string[]
+  let randomIndex = Math.floor(Math.random() * useragent.length)
+  return useragent[randomIndex]
+}
+
 // utils----start
 // 请求数据
-function fetchWordDOM(word: string, type: DictType, port: chrome.runtime.Port, cacheOrigin: CacheOrigin) {
+async function fetchWordDOM(word: string, type: DictType, port: chrome.runtime.Port, cacheOrigin: CacheOrigin) {
+  const randomAgent = await getUserAgent()
+  console.log(randomAgent, '随机请求的useragent')
   const requestUrl = requestProps[type].url.replace('wordHolder', word)
   fetch(requestUrl, {
-    headers: requestProps[type].headers
+    headers: {
+      ...requestProps[type].headers,
+      'User-Agent': randomAgent
+    }
   }).then(async res => {
     const resText = await res.text()
     parsedAndSendDOM(resText, word, type, port, cacheOrigin)

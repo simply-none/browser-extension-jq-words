@@ -50,6 +50,14 @@ let config: UserConfig = {
     }),
     ElementPlus({}),
   ],
+  build: {
+    terserOptions: {
+      compress: {
+        // drop_console: true,
+        pure_funcs: ['console.log']
+      }
+    },
+  },
   server: {
     host: '0.0.0.0'
   }

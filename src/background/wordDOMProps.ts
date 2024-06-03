@@ -84,7 +84,7 @@ const youdao: WordDOMProps = {
   ],
   existSelector: '#phrsListTab',
   cache: {
-    trans: ['#phrsListTab > div.trans-container > ul > li', '#authTransToggle .wt-container****.title.trans-tip > span***.trans-content .ol > li > p***.trans-content .collinsMajorTrans > p'],
+    trans: ['#phrsListTab > div.trans-container > ul > li', '#authTransToggle .trans-container****.title.trans-tip > span***.trans-content .ol > li > p***.trans-content .collinsMajorTrans > p'],
     phonetic: ['#phrsListTab  .pronounce'],
     morph: ['#discriminate .collapse-content > :not(.via)'],
   }

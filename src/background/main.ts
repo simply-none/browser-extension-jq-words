@@ -1,3 +1,4 @@
+import { useragentEntry } from './getUserAgent'
 import {
   listenMultiMsg,
 } from './sendMsg'
@@ -12,6 +13,9 @@ chrome.runtime.onInstalled.addListener(async () => {
   // const url = chrome.runtime.getURL('src/popup/index.html')
   // const tab = await chrome.tabs.create({ url: url })
   // console.log(`Created tab ${tab.id}`)
+
+  // 安装之后，就缓存user-agent
+  useragentEntry()
 })
 
 const popupConnectToContentScript = async (data: any) => {
