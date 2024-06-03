@@ -135,7 +135,7 @@ async function fetchWordDOM(word: string, type: DictType, port: chrome.runtime.P
 }
 
 async function parsedAndSendDOM (resText: string, word: string, type: DictType, port: chrome.runtime.Port, cacheOrigin: CacheOrigin) {
-
+    let resT = resText + ''
     let $parsedWord = parsedWordDOM(type, resText)
 
     let parsedWordDesc = ''
@@ -153,7 +153,7 @@ async function parsedAndSendDOM (resText: string, word: string, type: DictType, 
     })
 
     // 缓存单词信息，放最后是保证不会阻碍页面渲染
-    cacheWord(word, type, resText, cacheOrigin)
+    cacheWord(word, type, resT, cacheOrigin)
 }
 
 /**

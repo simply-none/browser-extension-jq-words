@@ -43,6 +43,7 @@ type WordCache = {
   phonetic: string[];
   // 变形
   morph: string[];
+  sound: string[];
 }
 
 interface WordList {
@@ -59,6 +60,6 @@ interface ReqData<T> {
   data: T;
 }
 
-type WordSimplyCacheType = 'trans' | 'phonetic' | 'morph'
+type WordSimplyCacheType = 'trans' | 'phonetic' | 'morph' | 'sound'
 
 type StorageType = 'history'

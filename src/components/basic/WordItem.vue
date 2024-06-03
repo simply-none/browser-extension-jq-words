@@ -9,9 +9,13 @@
         <div class="jq-word-item-word">
           {{ word.word }}
         </div>
-        <div class="jq-word-item-phonetic" v-for="phonetic in word.phonetic" :key="phonetic">
+        <div class="jq-word-item-phonetic" v-for="(phonetic, index) in word.phonetic" :key="phonetic" @click="playSound(index)">
           {{ phonetic }}
         </div>
+        <!-- <div class="jq-word-item-phonetic" v-for="(sound, index) in word.sound" :key="sound" @click="playSound(index)">
+          [{{ index + 1 }}]
+        </div> -->
+
       </div>
 
       <div class="jq-word-item-morph">
@@ -55,10 +59,6 @@
         </div>
       </div>
     </div>
-
-
-
-
   </div>
 </template>
 
@@ -79,6 +79,7 @@ interface Props {
     morph: string[] | null;
     word: string;
     wordType: string;
+    sound: string[] | null;
   }
 }
 
@@ -90,8 +91,18 @@ const props = withDefaults(defineProps<Props>(), {
     morph: null,
     word: '',
     wordType: '',
+    sound: null,
   })
 })
+
+const playSound = (index: number) => {
+  if (!props.word.sound || !props.word.sound[index]) {
+    return false
+  }
+  console.log(props.word.sound, props.word.sound[index], '发音列表')
+  const audio = new Audio(props.word.sound[index])
+  audio.play()
+}
 
 </script>
 

@@ -2,6 +2,7 @@ import cheerio from 'cheerio'
 import wordDOMProps from './wordDOMProps'
 import requestProps from './requestProps';
 import { getLocalStorage, setLocalStorage } from '@/utils/storage';
+import { parsedSoundType } from './parseSound';
 
 interface ReqData<T> {
   type: 'error' | `info:${string}` | `req:${string}`;
@@ -127,6 +128,7 @@ export async function cacheWord(word: string, type: DictType, html: string, cach
     trans: [],
     phonetic: [],
     morph: [],
+    sound: [],
   }
   let cacheKey = `${type}:${word}`
   let items = await getLocalStorage(cacheKey)
@@ -144,19 +146,33 @@ export async function cacheWord(word: string, type: DictType, html: string, cach
     Object.entries(wordDOMProps[type].cache).forEach(function ([item, selectorList]) {
 
       selectorList.forEach(function (sel) {
+        if (!wordCache[item as WordSimplyCacheType]) {
+          wordCache[item as WordSimplyCacheType] = []
+        }
 
+        // TODO:非sound，则直接push，否则先进行去重
+        // 解析sound src文件
+        if (item === 'sound') {
+          let sound: string[] = []
+          try {
+            sound = parsedSoundType[type](ele, sel, word)
+          } catch (e) {
+            console.log(e, 'e报错了了了了了了了了了了了了')
+          }
+          console.log(sound, 'parsedSound解析的sound')
+          wordCache[item as WordSimplyCacheType].push(...sound)
+          return true
+        }
         // 当字符串中有(*, **)星号时，进行切割
         // sel: '.dpron-i*daud'(删除)
         // *：剔除，**：挑选，***：多元素相加，****：表示处于某个元素下的内容进行其他*的操作, |: 表示多个类名
         // 举例：Collins：.hom****.gramGrp.pos***.sense**gramGrp|subc**cit|type-translation
         // TODO: 多元素相加有点难，后续处理
-        const parsedTextList = cacheDOMBy34StarDesign(ele, sel)
+        const parsedTextList = cacheDOMBy34StarDesign(html, sel)
 
         // 声明类型，不然报错
         console.log(parsedTextList, 'parsedTextList')
-        if (!wordCache[item as WordSimplyCacheType]) {
-          wordCache[item as WordSimplyCacheType] = []
-        }
+
         wordCache[item as WordSimplyCacheType].push(...parsedTextList)
         console.log(wordCache, parsedTextList, 'parsedTextList in cacheWord !wordCache.word')
       })
@@ -174,7 +190,8 @@ export async function cacheWord(word: string, type: DictType, html: string, cach
   })
 }
 
-function cacheDOMBy34StarDesign($: any, sel: string) {
+function cacheDOMBy34StarDesign(html: any, sel: string) {
+  const $ = cheerio.load(html)
   let parsedTextList: string[] = []
   let star3 = '***'
   let star4 = '****'

@@ -87,6 +87,7 @@ const youdao: WordDOMProps = {
     trans: ['#phrsListTab > div.trans-container > ul > li', '#authTransToggle .trans-container****.title.trans-tip > span***.trans-content .ol > li > p***.trans-content .collinsMajorTrans > p'],
     phonetic: ['#phrsListTab  .pronounce'],
     morph: ['#discriminate .collapse-content > :not(.via)'],
+    sound: ['.pronounce a']
   }
 
 }
@@ -181,6 +182,7 @@ const collins: WordDOMProps = {
     trans: ['div.content.definitions.dictionary.biling > .hom****.gramGrp.pos***.sense**.gramGrp.subc**.cit.type-translation'],
     phonetic: ['div.mini_h2.form'],
     morph: [],
+    sound: ['.pron a.sound']
   }
 
 }
@@ -241,6 +243,7 @@ const bing: WordDOMProps = {
     trans: ['div.qdef > ul > li', '#authid .each_seg****.pos_lin .pos***.se_lis .de_co', '#crossid .def_row.df_div1****.pos.pos1***.def_fl > .de_li1.de_li3 .p1-1.b_regtxt', '#homoid .def_row.df_div1****.pos.pos1***.def_fl > .de_li1.de_li3 .df_cr_w', '#webid .df_div1 .def_row.de_li1.de_li4 .p1-1.b_regtxt'],
     phonetic: ['.hd_area div.b_primtxt'],
     morph: ['div.qdef > div.hd_div1'],
+    sound: ['.hd_tf > .bigaud'],
   }
 }
 
@@ -282,6 +285,7 @@ const jinshan: WordDOMProps = {
     trans: ['[class^=Mean_part] > li'],
     phonetic: ['[class^=Mean_symbols] > li'],
     morph: ['[class^=Morphology_morphology] > li'],
+    sound: ['#__NEXT_DATA__'],
   }
 }
 
@@ -319,6 +323,7 @@ const longman: WordDOMProps = {
     trans: ['.dictlink****.Head > .POS***.Sense**.GRAM**.DEF'],
     phonetic: ['.PronCodes'],
     morph: ['.wordfams'],
+    sound: ['.frequent.Head .speaker.fas'],
   }
 }
 
@@ -353,6 +358,7 @@ const cambridge: WordDOMProps = {
     trans: ['.pr.entry-body__el .pr.dsense****.dsense_h***.def-block.ddef_block**.ddef_h**.def-body.ddef_b > .trans'],
     phonetic: ['.dpron-i*.daud'],
     morph: [],
+    sound: ['.pos-header.dpos-h .dpron-i source[type="audio/mpeg"]'],
   }
 }
 
@@ -389,6 +395,7 @@ const webster: WordDOMProps = {
     trans: ['.sb-entry > .sense .sense-content', '.sb-entry > .pseq.no-subnum'],
     phonetic: ['.prons-entries-list-inline', '.prons-entries-list'],
     morph: ['.mw-grid-table-list'],
+    sound: ['.entry-header .prons-entry-list-item'],
   }
 }
 
@@ -426,6 +433,7 @@ const oxford: WordDOMProps = {
     trans: ['.sense**.grammar**.def'],
     phonetic: ['.phon'],
     morph: [],
+    sound: ['.phonetics .sound'],
   }
 }
 
@@ -453,6 +461,7 @@ const vocabulary: WordDOMProps = {
     trans: ['.sense > .definition'],
     phonetic: ['.ipa-with-audio'],
     morph: ['.word-forms'],
+    sound: ['.word-area .pron-audio', '.word-area .audio[data-audio]']
   }
 }
 
@@ -493,6 +502,7 @@ const wordreference: WordDOMProps = {
     trans: ['#articleWRD > table:nth-child(2)  .ToWrd>.zhgroup:first-child*.simplified*.pinyintxt*.copy'],
     phonetic: ['.pwrapper*span:not([class])'],
     morph: ['dl.ListInfl'],
+    sound: ['#listen_widget script'],
   }
 }
 
@@ -528,6 +538,7 @@ const haici: WordDOMProps = {
     trans: ['.def > .layout ol > li*p'],
     phonetic: ['.phonetic span'],
     morph: ['.section.rel > .layout > div:first-child', 'div.section.rel > .layout ul:nth-child(1) li'],
+    sound: ['.phonetic .sound'],
   }
 }
 

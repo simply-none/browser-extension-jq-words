@@ -70,6 +70,7 @@ interface WordOriginItem {
 interface WordProps {
   origin: WordOriginItem[] | null;
   phonetic: string[] | null;
+  sound: string[] | null;
   trans: string[] | null;
   morph: string[] | null;
   word: string;
