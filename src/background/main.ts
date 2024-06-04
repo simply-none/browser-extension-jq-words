@@ -1,4 +1,5 @@
 import { useragentEntry } from './getUserAgent'
+// import { injectScript } from './injection'
 import {
   listenMultiMsg,
 } from './sendMsg'
@@ -17,6 +18,9 @@ chrome.runtime.onInstalled.addListener(async () => {
   // 安装之后，就缓存user-agent
   useragentEntry()
 })
+
+// 脚本注入content，见preInject.cjs
+// injectScript()
 
 const popupConnectToContentScript = async (data: any) => {
 

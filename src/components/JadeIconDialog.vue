@@ -83,6 +83,10 @@ let selfPosition = ref({
     overflow: auto;
     width: 100%;
     height: 100%;
+    padding: 0;
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 
   .el-dialog__header {

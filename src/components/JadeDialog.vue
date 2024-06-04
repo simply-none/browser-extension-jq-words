@@ -102,6 +102,7 @@ const getDialogOptions = (dialog: HTMLElement) => {
   .el-dialog__body {
     overflow: auto;
     height: calc(100% - 24px);
+    padding: 0;
   }
 
   .el-dialog__header {
@@ -109,6 +110,8 @@ const getDialogOptions = (dialog: HTMLElement) => {
     width: 100%;
     box-sizing: border-box;
     background: #939393;
+    height: 24px;
+    margin: 0;
   }
 }
 </style>

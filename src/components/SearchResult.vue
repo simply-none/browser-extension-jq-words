@@ -208,18 +208,21 @@ onMounted(() => {
       max-width: 300px;
       height: 20px;
 
-      :deep(.el-input__wrapper) {
-        padding: 0;
-        border-radius: 0;
-        box-shadow: none;
-        background: rgb(247 247 247);
-
-        .el-input__inner {
-          border: 0;
+      :deep(.el-input) {
+        .el-input__wrapper {
+          padding: 0;
           border-radius: 0;
-          padding-left: 6px;
-          color: #000000;
+          box-shadow: none;
+          background: rgb(247 247 247);
+
+          .el-input__inner {
+            border: 0;
+            border-radius: 0;
+            padding-left: 6px;
+            color: #000000;
+          }
         }
+
       }
 
       :deep(.el-input-group__append) {
@@ -299,5 +302,8 @@ onMounted(() => {
 :deep(.el-collapse-item__header) {
   height: 24px;
   line-height: 24px;
+  background: white;
+  border: 0;
+  color: initial;
 }
 </style>

@@ -13,9 +13,11 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
 import commonjsExternals from 'vite-plugin-commonjs-externals';
 
+// 使用混淆插件，会导致样式错乱
+// import { viteObfuscateFile } from 'vite-plugin-obfuscator';
 
 import manifest from './src/manifest'
-
+ 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
 let config: UserConfig = {
@@ -75,11 +77,16 @@ export default defineConfig(({ mode, command }) => {
     }))
   }
 
+  // 脚本注入的方式，所以需要进行content的构建
   if (command === 'build' && mode === 'content') {
+    console.log('content')
     // 如果使用 unplugin-element-plus 并且只使用组件 API(不在template使用），你需要手动导入样式。
     // Example:
     // import 'element-plus/es/components/message/style/css'
     // import { ElMessage } from 'element-plus'
+
+    config.root = resolve(__dirname, 'src/content')
+    config.build && (config.build.outDir = resolve(__dirname, 'src/content/dist'))
   }
 
 

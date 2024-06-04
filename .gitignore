@@ -13,6 +13,9 @@ dist
 dist-ssr
 *.local
 
+src/background/injection.ts
+public/assets/content/*
+
 cheerio-test.html
 cheerio*
 cheerio-test-style*
