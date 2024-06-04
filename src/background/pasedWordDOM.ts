@@ -123,7 +123,6 @@ export async function cacheWord(word: string, type: DictType, html: string, cach
   // TODO：应当保存之前，先获取之前该word保存的内容，然后进行更新操作
   let wordCache: WordCache = {
     word: '',
-    HTML: '',
     origin: [],
     trans: [],
     phonetic: [],
@@ -141,7 +140,6 @@ export async function cacheWord(word: string, type: DictType, html: string, cach
   if (!wordCache.word) {
     wordCache.word = word
     wordCache.origin = [cacheOrigin]
-    wordCache.HTML = ele.html()
 
     Object.entries(wordDOMProps[type].cache).forEach(function ([item, selectorList]) {
 
@@ -182,7 +180,11 @@ export async function cacheWord(word: string, type: DictType, html: string, cach
     console.log(wordCache, 'parsedTextList in cacheWord wordCache.word else')
   }
 
-  setLocalStorage(`${type}:${wordCache.word}`, wordCache, {
+  setLocalStorage({
+    [`${type}:${wordCache.word}`]: wordCache,
+    // 缓存html
+    [`html-${type}:${word}`]: ele.html(),
+  }, {
     onSuccess() {
       // TODO:原先的内容是：
       // getLocalStorage(`${type}:${wordCache.word}`)

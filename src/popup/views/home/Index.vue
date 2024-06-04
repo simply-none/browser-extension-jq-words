@@ -1,6 +1,7 @@
 <template>
   <div class="jq-app-wordList jq-aw">
     <Header title="单词列表">
+      <el-button type="primary" @click="delHtml">删除单词的html</el-button>
       <el-button type="primary" @click="saveFile(storageCache)">备份数据</el-button>
       <el-button type="danger" @click="clearCache">清空缓存</el-button>
     </Header>
@@ -85,6 +86,17 @@ let searchOptions = {
   origin: getDictTypes()
 }
 
+const delHtml = async () => {
+  const items = await getLocalStorage()
+  Object.entries(items).forEach(([key, value]) => {
+    delete value.HTML
+    items[key] = value
+    console.log(value, items[key], 'value')
+  })
+  console.log(items, 'items')
+  chrome.storage.local.set(items)
+}
+
 const clearCache = () => {
   tipBeforeImportantHandle({
     initTime: 180,
@@ -163,7 +175,6 @@ const searchWords = async (date: Date = new Date(), gap: number = 7, selectDictT
   table.value = []
 
   Object.keys(wordDesItems).forEach((key) => {
-    delete wordDesItems[key].HTML
     table.value.push({
       wordType: key,
       ...wordDesItems[key]

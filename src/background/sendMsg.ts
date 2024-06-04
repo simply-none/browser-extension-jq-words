@@ -84,22 +84,17 @@ async function listenMultiMsg(port: chrome.runtime.Port, data: ReqData<{ word: s
 function getSingleWordByType (word: string, type: DictType, port: chrome.runtime.Port, cacheOrigin: CacheOrigin) {
   return new Promise(async (res) => {
       // 获取之前是否存储过该值，有就不请求网络
-      let wordCache: WordCache = {} as WordCache
-      let cacheKey = `${type}:${word}`
-      let items = await getLocalStorage(cacheKey)
-      if (items[cacheKey]) {
-        wordCache = items[cacheKey] as WordCache
-      }
-      console.log(wordCache, 'wordCache')
-      if (wordCache.word) {
-        parsedAndSendDOM(wordCache.HTML, word, type, port, cacheOrigin)
-        return res(true)
+      let wordHtmlKey = `html-${type}:${word}`
+      let htmlItems = await getLocalStorage(wordHtmlKey)
+      let wordHtml = htmlItems[wordHtmlKey] as string || ''
+      if (wordHtml) {
+        parsedAndSendDOM(wordHtml, word, type, port, cacheOrigin)
+        return true
       }
   
       fetchWordDOM(word, type, port, cacheOrigin)
       res(true)
   })
-  
 }
 
 async function getUserAgent() {

@@ -38,7 +38,6 @@ type CacheOrigin = {
 type WordCache = {
   word: string,
   origin: cacheOrigin[],
-  HTML: string;
   trans: string[];
   phonetic: string[];
   // 变形

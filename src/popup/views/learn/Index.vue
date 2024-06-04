@@ -135,7 +135,6 @@ const getOriginWordByWord = async (word: string) => {
   let parseOriginWordList: AnyTypeObj[] = []
 
   Object.keys(items).forEach((key) => {
-    delete items[key].HTML
     parseOriginWordList.push({
       wordType: key,
       ...items[key]
