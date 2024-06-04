@@ -208,19 +208,21 @@ onMounted(() => {
       max-width: 300px;
       height: 20px;
 
-      :deep(.el-input) {
-        .el-input__wrapper {
-          padding: 0;
-          border-radius: 0;
-          box-shadow: none;
-          background: rgb(247 247 247);
+      :deep(.el-input__wrapper) {
+        padding: 0;
+        border-radius: 0;
+        box-shadow: none;
+        background: rgb(247 247 247);
+        max-width: 12em;
+        width: 100%;
 
-          .el-input__inner {
-            border: 0;
-            border-radius: 0;
-            padding-left: 6px;
-            color: #000000;
-          }
+        .el-input__inner {
+          border: 0;
+          border-radius: 0;
+          padding-left: 6px;
+          color: #000000;
+          margin: 0;
+          padding: 0 6px;
         }
 
       }
@@ -255,6 +257,9 @@ onMounted(() => {
       .el-button {
         width: 20px;
         height: 20px;
+        padding: 0;
+        min-width: 20px;
+        max-width: 20px;
       }
 
       .el-button+.el-button {

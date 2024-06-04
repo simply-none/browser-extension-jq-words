@@ -37,6 +37,8 @@ const setHeight = () => {
   display: none;
 }
 iframe {
-  border: 0;
+  border: 0 !important;
+  display: block !important;
+  min-height: 100px;
 }
 </style>

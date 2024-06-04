@@ -1,3 +1,6 @@
+/* 防止第三方样式覆盖，导致内容不展示 */
 #jade-custom iframe {
   border: 0 !important;
+  display: block !important;
+  min-height: 100px !important;
 }
