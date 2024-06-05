@@ -20,7 +20,7 @@
       <el-collapse v-model="expandPanel">
         <el-collapse-item v-for="(item, key) in computedWordList" :key="key" :title="item.name" :name="key">
           <template #title>
-            <div class="jade-dialog__title">{{ item.name }}</div>
+            <div class="jade-dialog__title" @click="initBing(item.type)">{{ item.name }}</div>
           </template>
           <div v-if="item.data.length > 0" class="jade-dialog__content">
             <div :style="{ height: computedHeight(key) }" class="jade-dialog__content-body">
@@ -85,6 +85,12 @@ import { storeToRefs } from 'pinia';
 const contentStore = useContentStore()
 const { searchDialogVisible } = storeToRefs(contentStore)
 const { showSearchDialog } = contentStore
+
+const initBing = (type: string) => {
+  if (type === 'bing') {
+    window.open(`https://www.bing.com/dict/search?q=a`, '_blank')
+  }
+}
 
 const props = defineProps<{
   info: { title: string },
