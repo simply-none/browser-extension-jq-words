@@ -88,7 +88,7 @@ const { showSearchDialog } = contentStore
 
 const initBing = (type: string) => {
   if (type === 'bing') {
-    window.open(`https://www.bing.com/dict/search?q=a`, '_blank')
+    window.open(`https://www.bing.com/search?q=%E5%BF%85%E5%BA%94%E8%AF%8D%E5%85%B8&form=QBLH&sp=-1&lq=0&pq=%E5%BF%85%E5%BA%94cidian&sc=3-8&qs=n&sk=&cvid=2AE3475035EA4EB1A6A4FC7907917094&ghsh=0&ghacc=0&ghpl=`, '_blank')
   }
 }
 
