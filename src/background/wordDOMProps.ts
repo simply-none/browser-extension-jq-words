@@ -48,27 +48,10 @@ const youdao: WordDOMProps = {
     }
     #collinsResult .ol .collinsMajorTrans {
       width: unset;
-  }
-    // #collinsResult .exampleLists {
-    //   margin: 0px 0 0px 24px;
-    // }
-    // #collinsResult .examples {
-    //   height: unset;
-    //   box-shadow: unset;
-    //   padding: 0;
-    // }
-    // .tabs a span, .tab-current span {
-    //   padding: 0;
-    // }
-    // .trans-wrapper h3 .toggleOpen {
-    //   display: none;
-    // }
-    // .trans-container {
-    //   margin: 3px 0;
-    // }
-    // .trans-container .ol li, #collinsResult .ol, .trans-wrapper h3 {
-    //   margin: 0;
-    // }
+    }
+    h1, h2 {
+      font-size: 18px !important;
+    }
     </style>
     `,
   ],
@@ -108,16 +91,6 @@ const collins: WordDOMProps = {
     .page .dictionary .sense {
       margin-left: 1em;
     }
-    // .res_cell_center {
-    //   width: 100%;
-    // }
-    // .res_cell_center_content {
-    //   padding: 0;
-    // }
-    // .page .cit.type-example .title.credits, .credits {
-    //   white-space: unset;
-    //   width: 100%;
-    // }
     .dc .cB {
       border: unset;
       box-shadow: unset;
@@ -129,33 +102,9 @@ const collins: WordDOMProps = {
     .dc .cit.type-quotation .quote, .dc .cB-q .quote, .dc .cB-e .quote, .dc .cB-th .quote {
       margin-top: .5em;
     }
-    // .cB-e .cit {
-    //   // font-size: 13px;
-    //   font-family: sans-serif;
-    //   font-style: normal;
-    // }
-    // span.gramGrp.pos {
-    //   width: 100%;
-    // }
-    // .titleExType {
-    //   margin-top: 6px;
-    // }
-    // .h2_entry {
-    //   // font-size: 18px !important;
-    // }
-    // .page .dictionary .sense {
-    //   margin-bottom: 0;
-    //   margin-top: 0;
-    // }
-    // .page .dictionary .sense.cit.type-translation:not(.type-example) .quote, .page .dictionary .sense.cit.type-translation:not(.type-example)>.quote, .page .dictionary .sense:not(.type-example)>.cit.type-translation.quote, .page .dictionary .sense:not(.type-example)>.cit.type-translation .quote, .page .dictionary .sense:not(.type-example)>.cit.type-translation .quote>.ref, .page .dictionary .sense:not(.type-example).cit.type-translation .quote>.ref {
-    //   // font-size: 16px;
-    // }
-    // .page .lbl, .page .colloc {
-    //   // font-size: 16px;
-    // }
-    // main>div#main_content {
-    //   width: 100% !important;
-    // }
+    h1, h2 {
+      font-size: 18px !important;
+    }
     </style>
     `
   ],
@@ -205,19 +154,9 @@ const bing: WordDOMProps = {
     div#thesaurusesid > div + div {
       border-bottom: 1px solid;
     }
-    // .se_li {
-    //   display: inline-flex;
-    // }
-    // #headword {
-    //   width: 100%;
-    //   // font-size: 1.2em;
-    // }
-    // #headword > h1 {
-    //   // font-size: 20px;
-    // }
-    // .hd_area {
-    //   margin-bottom: 3px;
-    // }
+    h1, h2 {
+      font-size: 18px !important;
+    }
     .li_pos > div {
       display: block;
     }
@@ -272,6 +211,9 @@ const jinshan: WordDOMProps = {
     [class^=FoldBox_fold] {
       padding: 0;
     }
+    h1, h2 {
+      font-size: 18px !important;
+    }
     </style>
     `,
   ],
@@ -304,6 +246,9 @@ const longman: WordDOMProps = {
     }
     .entry_content, .page_content, .error_content {
       margin: 0;
+    }
+    h1, h2 {
+      font-size: 18px !important;
     }
     </style>
     `,
@@ -341,6 +286,9 @@ const cambridge: WordDOMProps = {
       margin: 0;
       font-size: 20px;
     }
+    h1, h2 {
+      font-size: 18px !important;
+    }
     </style>
     `,
   ],
@@ -372,6 +320,9 @@ const webster: WordDOMProps = {
     h1, h2, h3, h4 {
       font-weight: 300;
       margin: 0;
+    }
+    h1, h2 {
+      font-size: 18px !important;
     }
     </style>
     `,
@@ -414,6 +365,9 @@ const oxford: WordDOMProps = {
     #onetrust-banner-sdk.otFlat {
       display: none;
     }
+    h1, h2 {
+      font-size: 18px !important;
+    }
     </style>
     `,
   ],
@@ -443,6 +397,9 @@ const vocabulary: WordDOMProps = {
     <style>
     *::-webkit-scrollbar {
       display: none;
+    }
+    h1, h2 {
+      font-size: 18px !important;
     }
     </style>
     `,
@@ -481,6 +438,9 @@ const wordreference: WordDOMProps = {
     .extras {
       margin-top: 0;
     }
+    h1, h2 {
+      font-size: 18px !important;
+    }
     </style>
     `,
   ],
@@ -517,6 +477,9 @@ const haici: WordDOMProps = {
       margin-left: 0;
       padding-left: 1em;
       width: 100%;
+    }
+    h1, h2 {
+      font-size: 18px !important;
     }
     </style>
     `,
