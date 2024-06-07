@@ -15,6 +15,7 @@ dist-ssr
 
 src/background/injection.ts
 public/assets/content/*
+*timestamp*
 
 cheerio-test.html
 cheerio*
