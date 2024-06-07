@@ -18,6 +18,7 @@ const manifest: chrome.runtime.Manifest = {
     "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
   },
   permissions: [
+    "sidePanel",
     "webNavigation",
     "webRequest",
     "contextMenus", // 右键菜单
@@ -58,10 +59,17 @@ const manifest: chrome.runtime.Manifest = {
   ],
   action: {
     default_popup: 'src/popup/index.html',
+    "default_title": "点击打开侧面板",
   },
   options_ui: {
     page: 'src/options/index.html',
     open_in_tab: false,
+  },
+  side_panel: {
+    default_path: 'src/popup/index.html',
+  },
+  chrome_url_overrides: {
+    "newtab": "src/newTab/index.html",
   },
 }
 

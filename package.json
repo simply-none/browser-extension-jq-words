@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "vite",
     "dev:content": "vite --host --mode content",
+    "dev:newTab": "vite --host --mode newTab",
     "build:content": "vite build src/content --mode content",
     "dev:popup": "vite --host --mode popup",
     "dev:options": "vite --host --mode options",

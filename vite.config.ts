@@ -107,5 +107,14 @@ export default defineConfig(({ mode, command }) => {
       port: 5390
     }
   }
+
+  if (mode === 'newTab') {
+    config.root = resolve(__dirname, 'src/newTab')
+    config.server = {
+      host: '0.0.0.0',
+      port: 5490
+    }
+  }
+
   return config
 })
