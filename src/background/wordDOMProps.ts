@@ -105,6 +105,9 @@ const collins: WordDOMProps = {
     h1, h2 {
       font-size: 18px !important;
     }
+    .res_cell_center {
+      width: 100% !important;
+    }
     </style>
     `
   ],

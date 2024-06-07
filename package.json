@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "vite",
     "dev:content": "vite --host --mode content",
-    "build:content": "vite build --mode content",
+    "build:content": "vite build src/content --mode content",
     "dev:popup": "vite --host --mode popup",
     "dev:options": "vite --host --mode options",
     "build:script": "node ./preScript.cjs && npm run build:content && node ./preInject.cjs && vue-tsc && vite build",
@@ -19,7 +19,8 @@
     "node-copydir": "^1.0.1",
     "pinia": "^2.1.7",
     "vue": "^3.4.21",
-    "vue-router": "^4.3.2"
+    "vue-router": "^4.3.2",
+    "vue-shadow-dom": "^4.2.0"
   },
   "devDependencies": {
     "@samrum/vite-plugin-web-extension": "^5.1.0",

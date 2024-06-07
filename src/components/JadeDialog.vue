@@ -89,6 +89,10 @@ const getDialogOptions = (dialog: HTMLElement) => {
   box-shadow: rgb(229 229 229) 0px 0px 6px;
   z-index: 10000000;
   border: 2px solid rgb(224 224 224);
+  overflow: hidden;
+  // &::-webkit-scrollbar {
+  //   display: none;
+  // }
 
   .jade-dialog {
     &__header {

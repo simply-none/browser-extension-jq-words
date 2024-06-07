@@ -29,14 +29,7 @@ let config: UserConfig = {
     },
   },
   plugins: [
-    vue({
-      template: {
-        compilerOptions: {
-          // 将所有带短横线的标签名都视为自定义元素
-          isCustomElement: (tag) => tag.startsWith('jade-custom-')
-        }
-      }
-    }),
+    vue(),
     commonjsExternals({
 		  externals: ['fs','canvas','zlib','http','https','url'] //这里
 		}),

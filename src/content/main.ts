@@ -1,7 +1,8 @@
 import { createApp } from 'vue'
-// import ElementPlus from 'element-plus'
+import ElementPlus from 'element-plus'
 import './style.css'
 import App from './App.vue'
+import shadow from 'vue-shadow-dom'
 
 import router from './router'
 
@@ -20,10 +21,8 @@ document.body.insertBefore(div, firstChild)
 const pinia = createPinia()
 const app = createApp(App)
 
-app.config.compilerOptions.isCustomElement = (tag) => tag.startsWith('jade-custom-')
-
-// app.use(ElementPlus)
-
+app.use(ElementPlus)
+app.use(shadow)
 app.use(router)
 app.use(pinia)
 

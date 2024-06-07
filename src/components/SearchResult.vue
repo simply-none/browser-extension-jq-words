@@ -54,7 +54,7 @@
 
 <script lang="ts" setup>
 import { onMounted, ref, onBeforeUnmount, computed, watch, reactive } from 'vue'
-import WordFrame from './WordFrame.ce.vue';
+import WordFrame from '@/components/WordFrame.vue';
 import JadeDialog from '@/components/JadeDialog.vue';
 import {
   Star,
