@@ -51,4 +51,4 @@ function clearDir(path) {
 }
 
 clearDir('./dist')
-clearDir('./public/assets/content')
+// clearDir('./public/assets/content')

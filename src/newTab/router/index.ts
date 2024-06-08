@@ -1,5 +1,4 @@
 
-import { children } from 'node_modules/cheerio/lib/api/traversing'
 import { createRouter, createWebHistory } from 'vue-router'
 
 export const menuRoutes = [
